@@ -29,7 +29,7 @@ class FB_Quizzes {
     }     
     
     public function register_plugin_scripts() {     
-        wp_register_script( 'fb-quizzes-script', FBQUIZ_URL . 'assets/script.js' );
+        wp_register_script( 'fb-quizzes-script', FBQUIZ_URL . 'assets/script.js', array('jquery', 'jquery-ui-sortable') );
         wp_enqueue_script( 'fb-quizzes-script' );     
     }
     

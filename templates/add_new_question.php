@@ -91,6 +91,7 @@
                                         <label class="screen-reader-text" for="newcategory">Add New Category</label>
                                         <input type="text" name="fb-newcategory" id="fb-newcategory" class="form-required" aria-required="true">
                                         <input type="button" id="fb-category-add-submit" class="button category-add-submit" value="Add New Category">
+                                        
                                     </p>
                                 </div>
                             </div>

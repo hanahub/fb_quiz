@@ -10,8 +10,12 @@ define( 'FBQUIZ_PATH', plugin_dir_path( __FILE__ ) );
 define( 'FBQUIZ_URL', trailingslashit( plugins_url( '/', __FILE__ ) ) );
 define( 'FBQUIZ_TEMPLATES_PATH', FBQUIZ_PATH . 'templates' );
 
+
+
 class FB_Quizzes {
  
+    public $fb_question = null;
+    
     public function __construct() { 
         register_activation_hook( __FILE__, array( $this, 'plugin_activation' ) );
         register_deactivation_hook( __FILE__, array( $this, 'plugin_deactivation' ) );
@@ -24,13 +28,16 @@ class FB_Quizzes {
     }    
     
     public function register_plugin_styles() { 
-        wp_register_style( 'fb-quizzes-style', FBQUIZ_URL . 'assets/style.css' );
+        wp_register_style( 'fb-quizzes-style', FBQUIZ_URL . 'assets/admin/style.css' );
         wp_enqueue_style( 'fb-quizzes-style' );     
     }     
     
     public function register_plugin_scripts() {     
-        wp_register_script( 'fb-quizzes-script', FBQUIZ_URL . 'assets/script.js', array('jquery', 'jquery-ui-sortable') );
+        wp_register_script( 'fb-quizzes-script', FBQUIZ_URL . 'assets/admin/script.js', array('jquery', 'jquery-ui-sortable') );
         wp_enqueue_script( 'fb-quizzes-script' );     
+        
+        wp_register_script( 'fb-blockui-script', FBQUIZ_URL . 'assets/jquery-blockui/jquery.blockUI.min.js', array('jquery') );
+        wp_enqueue_script( 'fb-blockui-script' );     
     }
     
     public function plugin_activation() {
@@ -44,6 +51,13 @@ class FB_Quizzes {
     
     function init() {
         
+        require_once( FBQUIZ_PATH . 'core/globals.php' );
+        
+        if (is_admin()) {
+            require_once( FBQUIZ_PATH . 'core/class-fb-question.php' );
+            $this->fb_question = new FB_Question();            
+        }
+        
     }    
     
     function admin_menu() {   
@@ -52,8 +66,8 @@ class FB_Quizzes {
         
         add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'All Quizzes', 'manage_options', 'all_quizzes', array( $this, 'all_quizzes_page' ) );
         add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'Add New Quiz', 'manage_options', 'add_new_quiz', 'meals_manager_callback' );
-        add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'All Questions', 'manage_options', 'all_questions', array( $this, 'all_questions_page' ) );
-        add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'Add New Question', 'manage_options', 'add_new_question', array( $this, 'add_new_question_page' ) );
+        add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'All Questions', 'manage_options', 'all_questions', array( $this, 'render_all_questions_page' ) );
+        add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'Add New Question', 'manage_options', 'add_new_question', array( $this, 'render_new_question_page' ) );
         add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'Reporting', 'manage_options', 'reporting', 'addnew_page_callback' );        
         
         remove_submenu_page('quizzes_manager', 'quizzes_manager');
@@ -63,11 +77,14 @@ class FB_Quizzes {
         
     }
     
-    function add_new_question_page() {
-        ob_start();
-        include( FBQUIZ_TEMPLATES_PATH . '/add_new_question.php' );
-        $html = ob_get_clean();        
-        echo $html;
+    /* Render All Questions page */
+    function render_all_questions_page() {
+        $this->fb_question->all_questions_page();
+    }
+    
+    /* Render New/Edit Question page */
+    function render_new_question_page() {
+        $this->fb_question->new_question_page();
     }
     
 }

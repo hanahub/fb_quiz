@@ -1,10 +1,10 @@
 @font-face {
       font-family: 'fontello';
-      src: url('./fonts/fontello.eot?52782488');
-      src: url('./fonts/fontello.eot?52782488#iefix') format('embedded-opentype'),
-           url('./fonts/fontello.woff?52782488') format('woff'),
-           url('./fonts/fontello.ttf?52782488') format('truetype'),
-           url('./fonts/fontello.svg?52782488#fontello') format('svg');
+      src: url('../fonts/fontello.eot?52782488');
+      src: url('../fonts/fontello.eot?52782488#iefix') format('embedded-opentype'),
+           url('../fonts/fontello.woff?52782488') format('woff'),
+           url('../fonts/fontello.ttf?52782488') format('truetype'),
+           url('../fonts/fontello.svg?52782488#fontello') format('svg');
       font-weight: normal;
       font-style: normal;
     }
@@ -159,10 +159,56 @@ input[type=radio].fb-correct-choice {
 .fb-wrap #fb-category-add-toggle {
     text-decoration: none;
 }
-.fb-wrap #newcategory {
+.fb-wrap #fb-newcategory {
     margin: 0 0 1em;
-}
-    
+}    
 .fb-wrap #category-add {
     margin: 1em 0;
-}   
+}
+.blockUI.blockOverlay:before {
+    height: 11px;
+    width: 43px;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    margin-left: -21px;
+    margin-top: -5px;
+    display: block;
+    -webkit-animation: spin 1s ease-in-out infinite;
+    -moz-animation: spin 1s ease-in-out infinite;
+    animation: spin 1s ease-in-out infinite;
+    content: "";
+    background: url(../images/ajax-loader.gif) center center;
+    background-size: cover;
+    line-height: 1;
+    text-align: center;
+    font-size: 2em;
+    color: rgba(0,0,0,.75);
+}
+.fb-body {
+    overflow: hidden;
+}
+#column-number-of-choices {
+    width: 17%;
+}
+#column-connected-to {
+    width: 10%;
+}
+#column-question-id {
+    width: 10%;
+}
+#column-author-name {
+    width: 12%;
+}
+#column-question-title {
+    width: 20%;
+}
+#column-points {
+    width: 8%;
+}
+#column-created-at, #column-updated-at {
+    width: 10%;
+}
+#column-categories {
+    width: 10%;
+}

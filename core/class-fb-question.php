@@ -11,6 +11,9 @@ class FB_Question {
     function __construct() {
         add_action( 'wp_ajax_fb_add_cat', array( $this, 'add_category' ) );
         add_action( 'wp_ajax_fb_add_question', array( $this, 'add_question' ) );
+        add_action( 'wp_ajax_fb_edit_question', array( $this, 'edit_question' ) );
+        
+        
     }
     
     /* Add question category */
@@ -25,7 +28,7 @@ class FB_Question {
     
     /* Add new question info */
     function add_question() {
-        global $wpdb, $FB_TABLES;
+        global $wpdb, $FB_TABLES, $QN_URL;
         $p = $_REQUEST['params'];
         
         $created_at = $updated_at = date('Y-m-d H:i:s', time());
@@ -44,11 +47,37 @@ class FB_Question {
                             'updated_at'            => $updated_at
                         ),
                     array('%d', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s')
-                );
-        echo json_encode(array(status => 1, id => $wpdb->insert_id));
+                );               
+        echo json_encode(array(status => 1, id => $wpdb->insert_id, redirect_url => $QN_URL . '&id=' . $wpdb->insert_id . '&action=edit'));
         die();
+    }
+    
+    /* Edit existing question info */
+    function edit_question() {
+        global $wpdb, $FB_TABLES, $QN_URL;
         
-        print_r($data);
+        $id = $_REQUEST['id'];
+        $p = $_REQUEST['params'];
+        
+        $updated_at = date('Y-m-d H:i:s', time());
+        
+        $result = $wpdb->update( $FB_TABLES['questions'],
+                    array(
+                            'author'                => $p['author'],
+                            'title'                 => $p['title'],
+                            'type'                  => $p['type'],
+                            'points'                => $p['points'],
+                            'cats'                  => serialize($p['cats']),
+                            'correct_explanation'   => $p['correct_explanation'],
+                            'status'                => $p['status'],
+                            'choices'               => serialize($p['choices']),                            
+                            'updated_at'            => $updated_at
+                        ),
+                    array('id' => $id),
+                    array('%d', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s'),
+                    array('%d')
+                );               
+        echo json_encode(array(status => 1, result => $result, redirect_url => $QN_URL . '&id=' . $id . '&action=edit'));
         die();
     }
     

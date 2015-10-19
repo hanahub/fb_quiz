@@ -110,7 +110,7 @@ input[type=radio].fb-correct-choice {
     border-color: #ac2925;
 }
 .fb-wrap .button.button-danger:active {
-   color: #fff;
+    color: #fff;
     background-color: #000;
     border-color: #ac2925;
 }

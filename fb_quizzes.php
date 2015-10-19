@@ -38,6 +38,8 @@ class FB_Quizzes {
         
         wp_register_script( 'fb-blockui-script', FBQUIZ_URL . 'assets/jquery-blockui/jquery.blockUI.min.js', array('jquery') );
         wp_enqueue_script( 'fb-blockui-script' );     
+        
+        
     }
     
     public function plugin_activation() {
@@ -49,7 +51,7 @@ class FB_Quizzes {
         //wp_clear_scheduled_hook('wpbdp_listings_expiration_check');
     }
     
-    function init() {
+    function init() {        
         
         require_once( FBQUIZ_PATH . 'core/globals.php' );
         

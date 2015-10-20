@@ -6,18 +6,18 @@
 <div class="wrap fb-wrap">
     <h1>All Questions <a href="<?php echo $QN_URL; ?>" class="page-title-action">Add New</a></h1>
     
-    <table class="wp-list-table widefat fixed striped questions">
+    <table class="wp-list-table widefat fixed striped questions" id="questions-table">
         <thead>
             <tr>
                 <td id="cb" class="manage-column column-cb check-column"><label class="screen-reader-text" for="cb-select-all-1">Select All</label><input id="cb-select-all-1" type="checkbox"></td>
-                <th scope="col" id="column-question-id" class="manage-column column-primary sortable desc"><a href="<?php echo $QA_URL . '&orderby=id&order=asc'; ?>"><span>Question ID</span><span class="sorting-indicator"></span></a></th>
-                <th scope="col" id="column-question-title" class="manage-column column-primary sortable desc"><a href="<?php echo $QA_URL . '&orderby=title&order=asc'; ?>"><span>Question Title</span><span class="sorting-indicator"></span></a></th>
+                <th scope="col" id="column-question-id" class="manage-column column-primary sortable desc">Question ID</th>
+                <th scope="col" id="column-question-title" class="manage-column column-primary sortable desc">Question Title</th>
                 <th scope="col" id="column-connected-to" class="manage-column column-primary">Connected To</th>
-                <th scope="col" id="column-number-of-choices" class="manage-column column-primary sortable desc"><a href="<?php echo $QA_URL . '&orderby=number_of_choices&order=asc'; ?>"><span>Number of Choices</span><span class="sorting-indicator"></span></a></th>
-                <th scope="col" id="column-points" class="manage-column column-primary sortable desc"><a href="<?php echo $QA_URL . '&orderby=points&order=asc'; ?>"><span>Points</span><span class="sorting-indicator"></span></a></th>
+                <th scope="col" id="column-number-of-choices" class="manage-column column-primary sortable desc">Number of Choices</th>
+                <th scope="col" id="column-points" class="manage-column column-primary sortable desc">Points</th>
                 <th scope="col" id="column-author-name" class="manage-column column-primary">Author Name</th>
-                <th scope="col" id="column-created-at" class="manage-column column-primary sortable desc"><a href="<?php echo $QA_URL . '&orderby=create_at&order=asc'; ?>"><span>Created At</span><span class="sorting-indicator"></span></a></th>
-                <th scope="col" id="column-updated-at" class="manage-column column-primary sortable desc"><a href="<?php echo $QA_URL . '&orderby=updated_at&order=asc'; ?>"><span>Updated At</span><span class="sorting-indicator"></span></a></th>
+                <th scope="col" id="column-created-at" class="manage-column column-primary sortable desc">Created At</th>
+                <th scope="col" id="column-updated-at" class="manage-column column-primary sortable desc">Updated At</th>
                 <th scope="col" id="column-categories" class="manage-column column-primary">Categories</th>
             </tr>
         </thead>

@@ -27,7 +27,10 @@ class FB_Quizzes {
         add_action( 'admin_menu', array( $this, 'admin_menu' ) );
     }    
     
-    public function register_plugin_styles() { 
+    public function register_plugin_styles() {         
+        wp_register_style( 'fb-datatables-style', FBQUIZ_URL . 'assets/jquery-datatables/jquery.dataTables.min.css' );
+        wp_enqueue_style( 'fb-datatables-style' );
+        
         wp_register_style( 'fb-quizzes-style', FBQUIZ_URL . 'assets/admin/style.css' );
         wp_enqueue_style( 'fb-quizzes-style' );     
     }     
@@ -37,7 +40,10 @@ class FB_Quizzes {
         wp_enqueue_script( 'fb-quizzes-script' );     
         
         wp_register_script( 'fb-blockui-script', FBQUIZ_URL . 'assets/jquery-blockui/jquery.blockUI.min.js', array('jquery') );
-        wp_enqueue_script( 'fb-blockui-script' );     
+        wp_enqueue_script( 'fb-blockui-script' );
+        
+        wp_register_script( 'fb-datatables-script', FBQUIZ_URL . 'assets/jquery-datatables/jquery.dataTables.min.js', array('jquery') );
+        wp_enqueue_script( 'fb-datatables-script' );     
         
         
     }

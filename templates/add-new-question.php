@@ -62,16 +62,17 @@
                 <div class="fb-fieldset fb-choices-box">
                     <fieldset>
                         <legend>Choices</legend>
-                        <div class="fb-input-wrapper1 ui-sortable" id="fb-choices">
+                        <div class="fb-input-wrapper1">
                         <?php                                                 
                             if ($edit_mode == 1 && count($q_choices['choices']) > 0) {
                                 if ($q_type == "single") {
                                     echo '<div class="fb-choices-header"><span class="fb-correct">Correct</span></div><div class="clear"></div>';
-                                    
+                                    echo '<div class="ui-sortable" id="fb-choices">';
                                     foreach ($q_choices['choices'] as $choice) {
                                         $choice_checked = '';
                                         if ($q_choices['correct'] == $choice[0]) $choice_checked = "checked";
                                         echo '
+                                        
                                         <div class="fb-choice">
                                             <a href="javascript:void(0)" class="fb-remove"><i class="fb-icon icon-minus-squared"></i></a>
                                             <a href="javascript:void(0)" class="fb-move ui-state-default ui-sortable-handle"><i class="fb-icon icon-resize-vertical"></i></a>
@@ -79,7 +80,10 @@
                                             <input type="radio" name="fb-correct-choice" class="fb-correct-choice" ' . $choice_checked . '>                     
                                         </div>';    
                                     }
+                                    echo '</div>';
                                 }                                
+                            } else {
+                                echo '<div class="ui-sortable" id="fb-choices"></div>';
                             }                        
                         ?>
                         </div>

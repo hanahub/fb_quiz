@@ -1,20 +1,33 @@
 jQuery(document).ready(function($) {
     $("#fb-button-add").click(function(e) {
         var choice = $("#fb-input-choice").val();
+        var type = $("#fb-question-type").val();
         var row = '';
         
-        if (choice != '') {
-            if ($('.fb-choice').length == 0) {
-                row = '<div class="fb-choices-header"><span class="fb-correct">Correct</span></div><div class="clear"></div>';
+        if (choice != '') {            
+            
+            var input_type = "", css = "";
+            if (type == "single") {
+                input_type = "radio";
+            } else if (type == "multiple") {
+                input_type = "checkbox";
+            } else {
+                css = 'style="display: none;"';
             }
+            
+            if ($('.fb-choice').length == 0 ) {
+                row = '<div ' + css + ' class="fb-choices-header"><span class="fb-correct">Correct</span></div><div class="clear"></div>';
+            }
+            
             row += ' \
                     <div class="fb-choice"> \
                         <a href="javascript:void(0)" class="fb-remove"><i class="fb-icon icon-minus-squared"></i></a> \
                         <a href="javascript:void(0)" class="fb-move ui-state-default ui-sortable-handle"><i class="fb-icon icon-resize-vertical"></i></a> \
                         <span class="fb-choice-name ui-state-default ui-sortable-handle">' + choice + '</span> \
-                        <input type="radio" name="fb-correct-choice" class="fb-correct-choice"/> \
+                        <input ' + css + ' type="' + input_type + '" name="fb-correct-choice" class="fb-correct-choice"/> \
                     </div> \
-                   ';
+                   ';            
+            
             $("#fb-choices").append(row);
                         
             
@@ -102,5 +115,28 @@ jQuery(document).ready(function($) {
     
     $( "#fb-choices" ).sortable();
     $( "#fb-choices" ).disableSelection();
+    $( "#questions-table" ).DataTable({
+        "aoColumnDefs": [
+          { 'bSortable': false, 'aTargets': [ 0 ] }
+        ],
+        "order": [[ 1, "desc" ]]
+    });
+    
+    $("#fb-question-type").change(function(e) {
+        var type = $(this).val();
+        
+        if (type == "single") {
+            $(".fb-choices-header").show();
+            $(".fb-choice > input").show();
+            $(".fb-choice > input").attr("type", "radio");
+        } else if (type == "multiple") {
+            $(".fb-choices-header").show();
+            $(".fb-choice > input").show();
+            $(".fb-choice > input").attr("type", "checkbox");
+        } else if (type == "sorting") {
+            $(".fb-choices-header").hide();
+            $(".fb-choice > input").hide();
+        }
+    });
     
 });

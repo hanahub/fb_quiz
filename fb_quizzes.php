@@ -15,6 +15,7 @@ define( 'FBQUIZ_TEMPLATES_PATH', FBQUIZ_PATH . 'templates' );
 class FB_Quizzes {
  
     public $fb_question = null;
+    public $fb_quiz = null;
     
     public function __construct() { 
         register_activation_hook( __FILE__, array( $this, 'plugin_activation' ) );
@@ -63,7 +64,9 @@ class FB_Quizzes {
         
         if (is_admin()) {
             require_once( FBQUIZ_PATH . 'core/class-fb-question.php' );
+            require_once( FBQUIZ_PATH . 'core/class-fb-quiz.php' );
             $this->fb_question = new FB_Question();            
+            $this->fb_quiz = new FB_Quiz();            
         }
         
     }    
@@ -73,7 +76,7 @@ class FB_Quizzes {
         add_menu_page( 'FB Quizzes', 'FB Quizzes', 'manage_options', 'quizzes_manager', 'my_custom_menu_page', 'dashicons-admin-post', 3 );     
         
         add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'All Quizzes', 'manage_options', 'all_quizzes', array( $this, 'all_quizzes_page' ) );
-        add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'Add New Quiz', 'manage_options', 'add_new_quiz', 'meals_manager_callback' );
+        add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'Add New Quiz', 'manage_options', 'add_new_quiz', array( $this, 'render_new_quiz_page' ) );
         add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'All Questions', 'manage_options', 'all_questions', array( $this, 'render_all_questions_page' ) );
         add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'Add New Question', 'manage_options', 'add_new_question', array( $this, 'render_new_question_page' ) );
         add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'Reporting', 'manage_options', 'reporting', 'addnew_page_callback' );        
@@ -83,6 +86,11 @@ class FB_Quizzes {
     
     function all_quizzes_page() {
         
+    }
+    
+    /* Render New Quiz page */
+    function render_new_quiz_page() {
+        $this->fb_quiz->new_quiz_page();
     }
     
     /* Render All Questions page */

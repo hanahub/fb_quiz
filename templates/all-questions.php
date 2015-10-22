@@ -60,3 +60,11 @@
         </tbody>
     </table>
 </div>
+<script>
+    jQuery( "#questions-table" ).DataTable({
+        "aoColumnDefs": [
+          { 'bSortable': false, 'aTargets': [ 0 ] }
+        ],
+        "order": [[ 1, "desc" ]]
+    });
+</script>

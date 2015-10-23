@@ -6,15 +6,20 @@
     $edit_mode = 0;
     if (!empty($id) && is_numeric($id) && $action == 'edit') {
         $edit_mode = 1;
-        $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLES['questions'] . " WHERE id=" . $id );
+        $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLES['quizzes'] . " WHERE id=" . $id );
         $q_data = $dumb[0];
         
         $q_title = $q_data->title;
-        $q_correct_explanation = $q_data->correct_explanation;
-        $q_choices = unserialize($q_data->choices);
-        $q_type = $q_data->type;
-        $q_points = $q_data->points;
-        $q_cats = unserialize($q_data->cats);
+        $q_description = $q_data->description;
+        $q_questions = unserialize($q_data->questions);
+        $q_num_of_questions = $q_data->num_of_questions;
+        $q_connected_to = unserialize($q_data->connected_to);
+        $q_passing_percentage = $q_data->passing_percentage;
+        $q_layout = $q_data->layout;
+        $q_allow_skipping = $q_data->allow_skipping;        
+        $q_immediate_feedback = $q_data->immediate_feedback;
+        $q_random_questions = $q_data->random_questions;
+        $q_random_choices = $q_data->random_choices;        
     } else {
         $id = '';
         $q_title = '';
@@ -38,7 +43,7 @@
                 <input type="button" class="button button-primary button-large" id="fb-publish" value="<?php if ($edit_mode == 1) echo 'Update'; else echo 'Publish'; ?>"/>
                 <input type="button" class="button button-large" id="fb-draft" value="Draft"/>
                 <?php if ($edit_mode == 1) : ?>
-                    <input type="button" class="button button-large" id="fb-delete" value="Delete Question"/>
+                    <input type="button" class="button button-large" id="fb-delete" value="Delete Quiz"/>
                 <?php endif; ?>
             </div>
         </div>
@@ -48,11 +53,11 @@
             <div class="fb-half-left">
                 <div class="fb-input-field fb-row">
                     <label for="fb-quiz-title">Quiz Title:</label>        
-                    <input type="text" name="fb-quiz-title" id="fb-quiz-title" value="<?php echo $q_points; ?>" class="fb-fullwidth"/>                
+                    <input type="text" name="fb-quiz-title" id="fb-quiz-title" value="<?php echo $q_title; ?>" class="fb-fullwidth"/>                
                 </div>
                 <div class="fb-input-field">
                     <label for="fb-quiz-description">Quiz Description:</label>        
-                    <?php wp_editor( $q_title, 'fb-quiz-description', $settings = array('textarea_name'=>'fb-quiz-description', 'editor_height'=>'200px') ); ?>
+                    <?php wp_editor( $q_description, 'fb-quiz-description', $settings = array('textarea_name'=>'fb-quiz-description', 'editor_height'=>'200px') ); ?>
                 </div>
             </div>
             <div class="fb-half-right">
@@ -61,21 +66,22 @@
                         <td><label for="fb-quiz-layout">Layout:</label></td>
                         <td>
                             <select id="fb-quiz-layout">                        
-                                <option value="single" <?php if ($q_type == 'single') echo 'selected'; ?>>Single Page</option>                            
+                                <option value="single" <?php if ($q_layout == 'single') echo 'selected'; ?>>Single Page</option>                            
+                                <option value="mutiple" <?php if ($q_layout == 'multiple') echo 'selected'; ?>>Multiple Page</option>                            
                             </select>
                         </td>
                     </tr>
                     <tr class="fb-quiz-checkboxes">
                         <td colspan="2">
-                            <label for="fb-allow-skipping"><input type="checkbox" name="fb-allow-skipping" id="fb-allow-skipping">Allow Skipping questions (if one question per page layout)</label>
-                            <label for="fb-immediate-feedback"><input type="checkbox" name="fb-immediate-feedback" id="fb-immediate_feedback">Immediate Feedback</label>
-                            <label for="fb-random-questions"><input type="checkbox" name="fb-random-questions" id="fb-random-questions">Random Questions Order</label>
-                            <label for="fb-random-choices"><input type="checkbox" name="fb-random-choices" id="fb-random-choices">Random Choices Order</label>
+                            <label for="fb-allow-skipping"><input type="checkbox" name="fb-allow-skipping" id="fb-allow-skipping" <?php if ($q_allow_skipping == 1) echo "checked"; ?>>Allow Skipping questions (if one question per page layout)</label>
+                            <label for="fb-immediate-feedback"><input type="checkbox" name="fb-immediate-feedback" id="fb-immediate-feedback" <?php if ($q_immediate_feedback == 1) echo "checked"; ?>>Immediate Feedback</label>
+                            <label for="fb-random-questions"><input type="checkbox" name="fb-random-questions" id="fb-random-questions" <?php if ($q_random_questions == 1) echo "checked"; ?>>Random Questions Order</label>
+                            <label for="fb-random-choices"><input type="checkbox" name="fb-random-choices" id="fb-random-choices" <?php if ($q_random_choices == 1) echo "checked"; ?>>Random Choices Order</label>
                         </td>
                     </tr>
                     <tr>
                         <td><label for="fb-passing-percentage">Passing Percentage:</label></td>
-                        <td><input type="text" name="fb-passing-percentage" id="fb-passing-percentage" value="<?php echo $q_points; ?>"/>%</td>
+                        <td><input type="text" name="fb-passing-percentage" id="fb-passing-percentage" value="<?php echo $q_passing_percentage; ?>"/>%</td>
                     </tr>                
                 </table>
             </div>
@@ -84,7 +90,7 @@
         <div class="fb-row">
             <div class="fb-input-field">
                 <label for="fb-questions-total" class="fb-inline">Total Number of Questions:</label>        
-                <?php echo '<span id="fb-questions-total">0</span>'; ?>
+                <span id="fb-questions-total"><?php echo $q_num_of_questions; ?></span>
             </div>
         </div>        
         <div class="fb-row">                
@@ -93,24 +99,20 @@
                     <legend>Questions</legend>
                     <div class="fb-input-wrapper1">
                     <?php                                                 
-                        if ($edit_mode == 1 && count($q_choices['choices']) > 0) {
-                            if ($q_type == "single") {
-                                echo '<div class="fb-choices-header"><span class="fb-correct">Correct</span></div><div class="clear"></div>';
-                                echo '<div class="ui-sortable" id="fb-choices">';
-                                foreach ($q_choices['choices'] as $choice) {
-                                    $choice_checked = '';
-                                    if ($q_choices['correct'] == $choice[0]) $choice_checked = "checked";
-                                    echo '
-                                    
-                                    <div class="fb-choice">
+                        if ($edit_mode == 1 && count($q_questions) > 0) {                                
+                            echo '<div class="ui-sortable" id="fb-choices">';
+                            foreach ($q_questions as $question) {
+                                $question_title = "XX";
+                                
+                                echo '
+                                    <div class="fb-choice" data-id="' . $question . '">
                                         <a href="javascript:void(0)" class="fb-remove"><i class="fb-icon icon-minus-squared"></i></a>
                                         <a href="javascript:void(0)" class="fb-move ui-state-default ui-sortable-handle"><i class="fb-icon icon-resize-vertical"></i></a>
-                                        <span class="fb-choice-name ui-state-default ui-sortable-handle">' . $choice[1] . '</span>
-                                        <input type="radio" name="fb-correct-choice" class="fb-correct-choice" ' . $choice_checked . '>                     
+                                        <span class="fb-choice-name ui-state-default ui-sortable-handle">' . $question_title . '</span>
                                     </div>';    
-                                }                                                
-                                echo '</div>';
-                            }                                
+                            }                                                
+                            echo '</div>';
+                            
                         } else {
                             echo '<div class="ui-sortable" id="fb-choices"></div>';
                         }                        
@@ -139,7 +141,20 @@
                                 </td></tr>';
                             }
                             echo '</table>';
-                        ?>    
+                        ?>
+                        <script>
+                            jQuery( "#fb-questions-table" ).DataTable({
+                                "aoColumnDefs": [
+                                  { 'bSortable': false, 'aTargets': [ 0 ] }
+                                ],
+                                "ordering": false,
+                                "info": false,
+                                "language": {
+                                    search: '<i class="fb-icon icon-search"></i>',
+                                    searchPlaceholder: "Search a question",                
+                                },
+                            });
+                        </script>    
                         </div>
                     </fieldset>
                 </div>
@@ -149,22 +164,38 @@
                     <fieldset>
                         <legend>Pools (categories)</legend>
                         <div class="fb-datatable-wrapper">
-                        <?php
-                            $cats = $wpdb->get_results("SELECT * FROM " . $FB_TABLES['questions_cat'] );
-                            echo '<table id="fb-categories-table" class="fb-datatable fb-fullwidth">';
-                            
-                            foreach ($cats as $row) {
-                                echo '                                
-                                <tr id="question_row_' . $row->id . '"><td>
-                                    <div class="fb-choice">
-                                        <a data-id="' . $row->id . '" href="javascript:void(0)" class="fb-add"><i class="fb-icon icon-plus-squared"></i></a>                                        
-                                        <span class="fb-choice-name">' . $row->name . '</span>                                        
-                                    </div>
+                            <div class="fb-questions-num-wrapper">
+                                <label>Number of questions: </label><input type="number" value="3" id="fb-questions-num"/><input type="button" value="Add" id="fb-add-questions"/>
+                            </div>
+                            <?php
+                                $cats = $wpdb->get_results("SELECT * FROM " . $FB_TABLES['questions_cat'] );
+                                echo '<table id="fb-categories-table" class="fb-datatable fb-fullwidth">';
                                 
-                                </td></tr>';
-                            }
-                            echo '</table>';
-                        ?>    
+                                foreach ($cats as $row) {
+                                    echo '                                
+                                    <tr id="category_row_' . $row->id . '"><td>
+                                        <div class="fb-choice">
+                                            <label for="fb_cat_' . $row->id . '"><input id="fb_cat_' . $row->id . '" type="radio" value="' . $row->id . '" name="fb_cat_radio" class="fb_cat_radio"/>' . $row->name . '</label>                                        
+                                        </div>
+                                    
+                                    </td></tr>';
+                                }
+                                echo '</table>';
+                            ?>
+                            <script>
+                                jQuery( "#fb-categories-table" ).DataTable({
+                                    "aoColumnDefs": [
+                                      { 'bSortable': false, 'aTargets': [ 0 ] }
+                                    ],
+                                    "ordering": false,
+                                    "info": false,
+                                    "language": {
+                                        search: '<i class="fb-icon icon-search"></i>',
+                                        searchPlaceholder: "Search a category",
+                                        
+                                    },
+                                });                                
+                            </script>    
                         </div>
                     </fieldset>
                 </div>
@@ -189,40 +220,63 @@
 <script>
     jQuery(document).ready(function($) {
         
-        var questions_total = 0;
+        var questions_total = $("#fb-choices .fb-choice").length;
         
         $( "#fb-choices" ).sortable();
+        if ($("#fb-quiz-layout").val() == "single") {
+            disableSkipping();
+        }
         
-        $( "#fb-questions-table, #fb-categories-table" ).DataTable({
-            "aoColumnDefs": [
-              { 'bSortable': false, 'aTargets': [ 0 ] }
-            ],
-            "ordering": false,
-            "info": false,
-            "language": {
-                search: '<i class="fb-icon icon-search"></i>',
-                searchPlaceholder: "Search a question",
-                
-            },
+        $("#fb-publish").click(function(e) {
+            var title = $("#fb-quiz-title").val();
+            var description = $("#fb-quiz-description").hasClass("tmce-active") ? tinyMCE.get("fb-quiz-description").getContent() : $("#fb-quiz-description").val();
+            
+            var questions = [];
+            var $choices_list = $("#fb-choices .fb-choice");            
+            $choices_list.each(function(i, obj) {
+                question_id = $(obj).attr("data-id");
+                questions.push(question_id);                
+            });
+            var status = "publish";
+            var connected_to = '';
+            var passing_percentage = $("#fb-passing-percentage").val();
+            var layout = $("#fb-quiz-layout").val();
+            var allow_skipping = $("#fb-allow-skipping").is(":checked") ? 1 : 0;
+            var immediate_feedback = $("#fb-immediate-feedback").is(":checked") ? 1 : 0;
+            var random_questions = $("#fb-random-questions").is(":checked") ? 1 : 0;
+            var random_choices = $("#fb-random-choices").is(":checked") ? 1 : 0;
+            
+            var params = { 'title': title, 'description': description, 'questions': questions, 'connected_to': connected_to, 'passing_percentage': passing_percentage, 'layout': layout, 'allow_skipping': allow_skipping,
+                 'status': status, 'num_of_questions': questions_total, 'immediate_feedback': immediate_feedback, 'random_questions': random_questions, 'random_choices': random_choices };
+            var data = {};
+            if ($("#fb-edit-id").val() != '')
+                data = {'action' : 'fb_edit_quiz', 'params' : params, 'id' : $("#fb-edit-id").val()};
+            else
+                data = {'action' : 'fb_add_quiz', 'params' : params };            
+            
+            fb_add(data);            
         });
         
-        $(".fb-add").live("click", function(e) {
+        $("#fb-questions-table .fb-add").live("click", function(e) {
             id = $(this).attr("data-id");
             title = $(this).next(".fb-choice-name").text();
-            row = ' \
-                    <div class="fb-choice" data-id="' + id + '"> \
-                        <a href="javascript:void(0)" class="fb-remove"><i class="fb-icon icon-minus-squared"></i></a> \
-                        <a href="javascript:void(0)" class="fb-move ui-state-default ui-sortable-handle"><i class="fb-icon icon-resize-vertical"></i></a> \
-                        <span class="fb-choice-name ui-state-default ui-sortable-handle">' + title + '</span> \
-                    </div> \
-                   ';            
-            $(this).parents("tr").fadeOut(200, function() {
-                $("#fb-choices").append(row);    
-            });
-            questions_total ++;
-            $("#fb-questions-total").text(questions_total);
-            
-            
+            if ( $("#fb-choices .fb-choice[data-id='" + id + "']").length != 0 ) {
+                alert("The question is already added to the list.");
+            } else {            
+                row = ' \
+                        <div class="fb-choice" data-id="' + id + '"> \
+                            <a href="javascript:void(0)" class="fb-remove"><i class="fb-icon icon-minus-squared"></i></a> \
+                            <a href="javascript:void(0)" class="fb-move ui-state-default ui-sortable-handle"><i class="fb-icon icon-resize-vertical"></i></a> \
+                            <span class="fb-choice-name ui-state-default ui-sortable-handle">' + title + '</span> \
+                        </div> \
+                       ';            
+                $(this).parents("tr").fadeOut(200, function() {
+                    $("#fb-choices").append(row);    
+             
+                    questions_total = $("#fb-choices .fb-choice").length;
+                    $("#fb-questions-total").text(questions_total);                    
+                });
+            }
         });
         
         $("#fb-questions-box .fb-remove").live("click", function(e) {
@@ -231,10 +285,72 @@
             $(dumb).fadeOut(200, function() {
                 $(this).remove();
                 $("#question_row_" + id).show();
-            });
-            questions_total --;
-            $("#fb-questions-total").text(questions_total);
+                
+                questions_total = $("#fb-choices .fb-choice").length;
+                $("#fb-questions-total").text(questions_total);
+            });            
         });
+        
+        $("#fb-categories-table .fb-add").live("click", function(e) {
+            id = $(this).attr("data-id");
+            
+        });
+        
+        $("#fb-add-questions").click(function(e) {
+            
+            var cat_id = $('input[name=fb_cat_radio]:checked').val();
+            var num_questions = $("#fb-questions-num").val();
+            if (typeof cat_id != "undefined" && cat_id != "") {
+                var data = {'action' : 'fb_get_random_questions_by_category', 'id' : cat_id, 'num_questions' : num_questions};
+                fb_block('.fb-wrap');
+                $.post(ajaxurl, data, function(response) {
+                    var result = JSON.parse(response);
+                    var row = '';
+                    fb_unblock('.fb-wrap'); 
+                    if (result['status'] == 1) {
+                        for (i = 0; i < result['rows'].length; i++) {
+                            console.log(result['rows'][i]);
+                            id = result['rows'][i]['id'];
+                            title = result['rows'][i]['title'];
+                            if ( $("#fb-choices .fb-choice[data-id='" + id + "']").length == 0 ) {
+                                row = ' \
+                                        <div class="fb-choice fb-from-cats" data-id="' + id + '"> \
+                                            <a href="javascript:void(0)" class="fb-remove"><i class="fb-icon icon-minus-squared"></i></a> \
+                                            <a href="javascript:void(0)" class="fb-move ui-state-default ui-sortable-handle"><i class="fb-icon icon-resize-vertical"></i></a> \
+                                            <span class="fb-choice-name ui-state-default ui-sortable-handle">' + title + '</span> \
+                                        </div> \
+                                       ';
+                                $("#fb-choices").append(row);
+                                questions_total = $("#fb-choices .fb-choice").length;
+                                $("#fb-questions-total").text(questions_total);
+                            }
+                        }
+                        
+                    }
+                });
+            } else {
+                alert("Please select a category to add.");
+            }
+        });
+        
+        $("#fb-quiz-layout").change(function(e) {
+            if ($(this).val() == "single") {
+                disableSkipping();
+            } else {
+                enableSkipping();                
+            }
+        });
+        
+        function disableSkipping() {
+            $("#fb-allow-skipping").prop("disabled", true);
+            $("#fb-allow-skipping").parents("label").addClass("fb-disabled");
+        }
+        function enableSkipping() {
+            $("#fb-allow-skipping").prop("disabled", false);
+            $("#fb-allow-skipping").parents("label").removeClass("fb-disabled");
+        }
+        
+        
     });
     
 </script>

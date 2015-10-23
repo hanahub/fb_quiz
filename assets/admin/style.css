@@ -275,7 +275,7 @@ table.dataTable.no-footer {
     padding-bottom: 8px;
 }
 .fb-datatable-wrapper .dataTables_wrapper .paginate_button {
-    padding: 2px 6px;
+    padding: 1px 6px;
     background: #fafafa;
     color: #666;
     border: 1px solid #ddd;
@@ -338,6 +338,29 @@ table.dataTable.no-footer {
 #fb-questions-box {
     max-width: 850px;
 }
+#fb-questions-num {
+    width: 46px;
+}
+.fb-questions-num-wrapper {
+    position: absolute;
+    right: 0px;
+    z-index: 9;
+}
+.fb-questions-num-wrapper label {
+    vertical-align: top;
+    position: relative;
+    top: 5px;
+}
+.fb-questions-num-wrapper input[type="button"] {
+    padding: 2px 5px;
+}
+#fb-add-quiz-box2 .fb-datatable-wrapper {
+    position: relative;
+}
+.fb-disabled {
+    color: #ccc;
+}
+
 
 
 

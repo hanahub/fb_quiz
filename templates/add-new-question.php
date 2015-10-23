@@ -285,16 +285,9 @@
             if ($("#fb-edit-id").val() != '')
                 data = {'action' : 'fb_edit_question', 'params' : params, 'id' : $("#fb-edit-id").val()};
             else
-                data = {'action' : 'fb_add_question', 'params' : params };
+                data = {'action' : 'fb_add_question', 'params' : params };            
             
-            $( '.fb-wrap' ).block({ message: null, overlayCSS: {background: '#fff', opacity: 0.6} });    
-            $.post(ajaxurl, data, function(response) {
-                var result = JSON.parse(response);
-                if (result['status'] == 1) {
-                    $('.fb-wrap' ).unblock();
-                    window.location.href = result['redirect_url'];
-                }
-            });
+            fb_add(data);
         });
         
         $("#fb-question-type").change(function(e) {

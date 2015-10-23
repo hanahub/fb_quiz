@@ -75,7 +75,7 @@ class FB_Quizzes {
         
         add_menu_page( 'FB Quizzes', 'FB Quizzes', 'manage_options', 'quizzes_manager', 'my_custom_menu_page', 'dashicons-admin-post', 3 );     
         
-        add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'All Quizzes', 'manage_options', 'all_quizzes', array( $this, 'all_quizzes_page' ) );
+        add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'All Quizzes', 'manage_options', 'all_quizzes', array( $this, 'render_all_quizzes_page' ) );
         add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'Add New Quiz', 'manage_options', 'add_new_quiz', array( $this, 'render_new_quiz_page' ) );
         add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'All Questions', 'manage_options', 'all_questions', array( $this, 'render_all_questions_page' ) );
         add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'Add New Question', 'manage_options', 'add_new_question', array( $this, 'render_new_question_page' ) );
@@ -84,8 +84,8 @@ class FB_Quizzes {
         remove_submenu_page('quizzes_manager', 'quizzes_manager');
     }
     
-    function all_quizzes_page() {
-        
+    function render_all_quizzes_page() {
+        $this->fb_quiz->all_quizzes_page();
     }
     
     /* Render New Quiz page */

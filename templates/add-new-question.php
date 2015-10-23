@@ -256,11 +256,11 @@
             }
         });
         
-        $("#fb-publish").click(function(e) {
+        
+        function update_question(status) {
             var title = $("#fb-question-title").hasClass("tmce-active") ? tinyMCE.get("fb-question-title").getContent() : $("#fb-question-title").val();
             var correct_explanation = $("#fb-correct-explanation").hasClass("tmce-active") ? tinyMCE.get("fb-correct-explanation").getContent() : $("#fb-correct-explanation").val();        
-            var type = $("#fb-question-type").val();
-            var status = "publish";
+            var type = $("#fb-question-type").val();            
             var points = $("#fb-point").val();
             var author = $("#fb-author").val();
             var cats = [];
@@ -285,9 +285,16 @@
             if ($("#fb-edit-id").val() != '')
                 data = {'action' : 'fb_edit_question', 'params' : params, 'id' : $("#fb-edit-id").val()};
             else
-                data = {'action' : 'fb_add_question', 'params' : params };            
-            
-            fb_add(data);
+                data = {'action' : 'fb_add_question', 'params' : params };
+
+            fb_add(data);                
+        }
+        $("#fb-publish").click(function(e) {                        
+            update_question("publish");            
+        });
+        
+        $("#fb-draft").click(function(e) {
+            update_question("draft");
         });
         
         $("#fb-question-type").change(function(e) {

@@ -67,7 +67,7 @@
                         <td>
                             <select id="fb-quiz-layout">                        
                                 <option value="single" <?php if ($q_layout == 'single') echo 'selected'; ?>>Single Page</option>                            
-                                <option value="mutiple" <?php if ($q_layout == 'multiple') echo 'selected'; ?>>Multiple Page</option>                            
+                                <option value="multiple" <?php if ($q_layout == 'multiple') echo 'selected'; ?>>Multiple Page</option>                            
                             </select>
                         </td>
                     </tr>
@@ -102,7 +102,9 @@
                         if ($edit_mode == 1 && count($q_questions) > 0) {                                
                             echo '<div class="ui-sortable" id="fb-choices">';
                             foreach ($q_questions as $question) {
-                                $question_title = "XX";
+                                
+                                $dumb = $wpdb->get_row( "SELECT * FROM " . $FB_TABLES['questions']  . " WHERE id=" . $question );
+                                $question_title = $dumb->title;
                                 
                                 echo '
                                     <div class="fb-choice" data-id="' . $question . '">
@@ -227,17 +229,16 @@
             disableSkipping();
         }
         
-        $("#fb-publish").click(function(e) {
+        function update_quiz(status) {
             var title = $("#fb-quiz-title").val();
             var description = $("#fb-quiz-description").hasClass("tmce-active") ? tinyMCE.get("fb-quiz-description").getContent() : $("#fb-quiz-description").val();
-            
+            var author = $("#fb-author").val();
             var questions = [];
             var $choices_list = $("#fb-choices .fb-choice");            
             $choices_list.each(function(i, obj) {
                 question_id = $(obj).attr("data-id");
                 questions.push(question_id);                
-            });
-            var status = "publish";
+            });            
             var connected_to = '';
             var passing_percentage = $("#fb-passing-percentage").val();
             var layout = $("#fb-quiz-layout").val();
@@ -247,14 +248,26 @@
             var random_choices = $("#fb-random-choices").is(":checked") ? 1 : 0;
             
             var params = { 'title': title, 'description': description, 'questions': questions, 'connected_to': connected_to, 'passing_percentage': passing_percentage, 'layout': layout, 'allow_skipping': allow_skipping,
-                 'status': status, 'num_of_questions': questions_total, 'immediate_feedback': immediate_feedback, 'random_questions': random_questions, 'random_choices': random_choices };
+                 'author': author, 'status': status, 'num_of_questions': questions_total, 'immediate_feedback': immediate_feedback, 'random_questions': random_questions, 'random_choices': random_choices };
             var data = {};
             if ($("#fb-edit-id").val() != '')
                 data = {'action' : 'fb_edit_quiz', 'params' : params, 'id' : $("#fb-edit-id").val()};
             else
                 data = {'action' : 'fb_add_quiz', 'params' : params };            
             
-            fb_add(data);            
+            fb_add(data);
+        }
+        
+        $("#fb-publish").click(function(e) {
+            update_quiz("publish");
+        });
+        
+        $("#fb-draft").click(function(e) {
+            update_quiz("draft");
+        });
+        
+        $("#fb-delete").click(function(e) {
+            
         });
         
         $("#fb-questions-table .fb-add").live("click", function(e) {

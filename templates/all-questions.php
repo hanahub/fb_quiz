@@ -51,7 +51,7 @@
                 <td><?php echo $row->points; ?></td>
                 <td><a href="<?php echo $QA_URL . '&author=' . $row->author; ?>"><?php echo $user->user_nicename; ?></a></td>
                 <td><?php echo $row->created_at; ?></td>
-                <td><?php echo $row->created_at; ?></td>
+                <td><?php echo $row->updated_at; ?></td>
                 <td><?php if (!empty($cats_str)) echo implode(", ", $cats_str); ?></td>                
             </tr>
         <?php 

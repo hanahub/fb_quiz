@@ -1,6 +1,8 @@
 <?php
     global $wpdb, $FB_TABLES, $current_user;
     
+    global $wp_rewrite;
+    
     $id = $_REQUEST['id'];
     $action = $_REQUEST['action'];
     $edit_mode = 0;
@@ -21,12 +23,7 @@
         $q_random_questions = $q_data->random_questions;
         $q_random_choices = $q_data->random_choices;        
     } else {
-        $id = '';
-        $q_title = '';
-        $q_correct_explanation = '';
-        $q_type = '';
-        $q_points = '';
-        $q_cats = '';
+        $id = '';        
     }
 ?>
 

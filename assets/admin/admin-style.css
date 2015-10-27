@@ -23,18 +23,6 @@
 .fb-fieldset legend {
     font-size: 14px;
 }
-.fb-row {
-    margin-bottom: 20px;
-}
-.fb-row:before {
-    display: table;
-    content: " ";
-}
-.fb-row:after {
-    clear: both;
-    display: table;
-    content: " ";
-}
 .fb-input-wrapper1 {
     display: table;
     width: 100%;

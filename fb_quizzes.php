@@ -30,8 +30,17 @@ class FB_Quizzes {
         add_action( 'init', array( $this, 'init' ) );
         add_action( 'admin_menu', array( $this, 'admin_menu' ) );
         
+        add_filter( 'body_class', array( $this, "body_class" ) );
         add_filter( 'query_vars', array( $this, 'query_vars' ) );
         add_filter( 'the_content', array( $this, "the_content" ) );
+        
+        add_action( 'wp_ajax_fb_add_answer', array( $this, 'add_answer' ) );       
+        add_action( 'wp_ajax_nopriv_fb_add_answer', array( $this, 'add_answer' ) );
+        
+        if (!is_admin()) { 
+            add_action( 'wp_head', array( $this, 'ajaxurl' ) );
+        }
+        
         //add_filter( 'the_title', array( $this, "the_title" ) );
     }
     
@@ -44,6 +53,11 @@ class FB_Quizzes {
     }     
     
     function register_scripts() {
+        wp_register_script( 'fb-blockui-script', FBQUIZ_URL . 'assets/jquery-blockui/jquery.blockUI.min.js', array('jquery') );
+        wp_enqueue_script( 'fb-blockui-script' );
+        
+        wp_register_script( 'fb-quizzes-script', FBQUIZ_URL . 'assets/front-end/script.js', array('jquery', 'jquery-ui-sortable') );
+        wp_enqueue_script( 'fb-quizzes-script' );
         
     }    
     
@@ -69,17 +83,54 @@ class FB_Quizzes {
         wp_enqueue_script( 'fb-quizzes-script' );
     }
     
-    function plugin_activation() {        
+    function plugin_activation() {
         
-    }
-    
-    function query_vars( $query_vars ){
-        $query_vars[] = 'quiz_id';
-        return $query_vars;
+        global $user_ID;
+
+        $results['post_type']    = 'page';
+        $results['post_name']    = 'results';
+        $results['post_content'] = '';
+        $results['post_parent']  = 0;
+        $results['post_author']  = $user_ID;
+        $results['post_status']  = 'publish';
+        $results['post_title']   = 'Results';        
+        
+        $quizzes['post_type']    = 'page';
+        $quizzes['post_name']    = 'quizzes';
+        $quizzes['post_content'] = '';
+        $quizzes['post_parent']  = 0;
+        $quizzes['post_author']  = $user_ID;
+        $quizzes['post_status']  = 'publish';
+        $quizzes['post_title']   = 'Quizzes';        
+        
+        //$pageid = wp_insert_post($results);
+        //$pageid = wp_insert_post($quizzes);
+        
     }
     
     function plugin_deactivation() {
         //wp_clear_scheduled_hook('wpbdp_listings_expiration_check');
+    }
+    
+    function query_vars( $query_vars ) {                
+        $query_vars[] = 'fb_id';    
+        return $query_vars;
+    }    
+    
+    function body_class( $classes ) {        
+        if ($this->is_quiz())
+            $classes[] = 'single-quiz';
+        
+        return $classes;
+    }
+    
+    function ajaxurl() {
+    ?>
+        <script type="text/javascript">
+            var ajaxurl = '<?php echo admin_url('admin-ajax.php'); ?>';
+            var site_url = '<?php echo site_url(); ?>';
+        </script>
+    <?php
     }
     
     function init() {        
@@ -95,8 +146,15 @@ class FB_Quizzes {
         
         add_rewrite_rule(
             'quizzes/([0-9]+)/?$',
-            'index.php?pagename=quizzes&quiz_id=$matches[1]',
+            'index.php?pagename=quizzes&fb_id=$matches[1]',
             'top' );
+        
+        add_rewrite_rule(
+            'results/([0-9]+)/?$',
+            'index.php?pagename=results&fb_id=$matches[1]',
+            'top' );
+
+            
     }    
     
     function admin_menu() {   
@@ -113,10 +171,9 @@ class FB_Quizzes {
     }
     
     public function is_quiz() {
-        global $wp_query;
-                                  
+        global $wp_query;                         
         $name = $wp_query->get('name');
-        $quiz_id = $wp_query->get('quiz_id');
+        $quiz_id = $wp_query->get('fb_id');
         
         if ($name == "quizzes") {
             if (is_numeric($quiz_id)) {
@@ -125,17 +182,21 @@ class FB_Quizzes {
         }
         
         return 0;
-    }
-    
+    }    
     
     function the_content($content) {
-        $quiz_id = $this->is_quiz();
-        
-        if ($quiz_id > 0) {  
-            return $this->quiz_page($quiz_id);
-        } else {
-            return $content;
-        }   
+        global $wp_query;
+        if ( is_page( 'quizzes' ) ) {        
+            $quiz_id = $this->is_quiz();
+            if ($quiz_id > 0) {  
+                return $this->quiz_page($quiz_id);
+            }
+        } else if ( is_page('results') ) {
+            $result_id = $wp_query->get("fb_id"); print_r($wp_query);
+            return $this->result_page($result_id);
+        }
+                 
+        return $content;
     }
     
     function the_title($title) {
@@ -151,6 +212,14 @@ class FB_Quizzes {
     public function quiz_page($quiz_id) {
         ob_start();
         include( FBQUIZ_TEMPLATES_PATH . '/quiz.php' );
+        $html = ob_get_clean();        
+        return $html;
+    }
+    
+    /* Display Result page on front-end */
+    public function result_page($quiz_id) {
+        ob_start();
+        include( FBQUIZ_TEMPLATES_PATH . '/result.php' );
         $html = ob_get_clean();        
         return $html;
     }
@@ -172,6 +241,26 @@ class FB_Quizzes {
     /* Render New/Edit Question page */
     function render_new_question_page() {
         $this->fb_question->new_question_page();
+    }
+    
+    /* Save new answer into answers table */
+    function add_answer() {
+        global $wpdb, $FB_TABLE, $FB_URL;
+        $p = $_REQUEST['params'];
+        
+        $created_at = $updated_at = date('Y-m-d H:i:s', time());
+        
+        $wpdb->insert( $FB_TABLE['answers'],
+                    array(
+                            'quiz_id'               => $p['quiz_id'],
+                            'student_id'            => $p['student_id'],                            
+                            'answers'               => serialize($p['answers']),                            
+                            'created_at'            => $created_at
+                        ),
+                    array('%d', '%d', '%s', '%s')
+                );               
+        echo json_encode(array(status => 1, id => $wpdb->insert_id, redirect_url => $FB_URL['results'] . '/' . $wpdb->insert_id));
+        die();
     }
     
 }

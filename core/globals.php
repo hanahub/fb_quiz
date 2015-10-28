@@ -1,13 +1,19 @@
 <?php
-    $GLOBALS['FB_TABLES'] = array(
+    $GLOBALS['FB_TABLE'] = array(
         'questions_cat' => 'fb_questions_cat',
         'questions' => 'fb_questions',
-        'quizzes' => 'fb_quizzes'
+        'quizzes' => 'fb_quizzes',
+        'answers' => 'fb_answers'
     );
     
-    $GLOBALS['QA_URL'] = admin_url( 'admin.php?page=' . 'all_questions' );
-    $GLOBALS['QN_URL'] = admin_url( 'admin.php?page=' . 'add_new_question' );
-    $GLOBALS['UA_URL'] = admin_url( 'admin.php?page=' . 'all_quizzes' );
-    $GLOBALS['UN_URL'] = admin_url( 'admin.php?page=' . 'add_new_quiz' );
+    $GLOBALS['FB_URL'] = array(
+        'qa' => admin_url( 'admin.php?page=' . 'all_questions' ),
+        'qn' => admin_url( 'admin.php?page=' . 'add_new_question' ),
+        'ua' => admin_url( 'admin.php?page=' . 'all_quizzes' ),
+        'un' => admin_url( 'admin.php?page=' . 'add_new_quiz' ),
+        'quizzes' => home_url( '/quizzes/' ),
+        'results' => home_url( '/results/' )
+    );
+ 
 
 ?>

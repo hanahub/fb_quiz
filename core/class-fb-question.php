@@ -18,22 +18,22 @@ class FB_Question {
     
     /* Add question category */
     function add_category() {
-        global $wpdb, $FB_TABLES;
+        global $wpdb, $FB_TABLE;
         $cat = $_REQUEST['cat'];
         
-        $wpdb->insert( $FB_TABLES['questions_cat'], array('name' => $cat), array('%s'));
+        $wpdb->insert( $FB_TABLE['questions_cat'], array('name' => $cat), array('%s'));
         echo json_encode(array(status => 1, id => $wpdb->insert_id));
         die();
     }
     
     /* Add new question info */
     function add_question() {
-        global $wpdb, $FB_TABLES, $QN_URL;
+        global $wpdb, $FB_TABLE, $FB_URL;
         $p = $_REQUEST['params'];
         
         $created_at = $updated_at = date('Y-m-d H:i:s', time());
         
-        $wpdb->insert( $FB_TABLES['questions'],
+        $wpdb->insert( $FB_TABLE['questions'],
                     array(
                             'author'                => $p['author'],
                             'title'                 => $p['title'],
@@ -48,20 +48,20 @@ class FB_Question {
                         ),
                     array('%d', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s')
                 );               
-        echo json_encode(array(status => 1, id => $wpdb->insert_id, redirect_url => $QN_URL . '&id=' . $wpdb->insert_id . '&action=edit'));
+        echo json_encode(array(status => 1, id => $wpdb->insert_id, redirect_url => $FB_URL['qn'] . '&id=' . $wpdb->insert_id . '&action=edit'));
         die();
     }
     
     /* Edit existing question info */
     function edit_question() {
-        global $wpdb, $FB_TABLES, $QN_URL;
+        global $wpdb, $FB_TABLE, $FB_URL;
         
         $id = $_REQUEST['id'];
         $p = $_REQUEST['params'];
         
         $updated_at = date('Y-m-d H:i:s', time());
         
-        $result = $wpdb->update( $FB_TABLES['questions'],
+        $result = $wpdb->update( $FB_TABLE['questions'],
                     array(
                             'author'                => $p['author'],
                             'title'                 => $p['title'],
@@ -77,7 +77,7 @@ class FB_Question {
                     array('%d', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s'),
                     array('%d')
                 );               
-        echo json_encode(array(status => 1, result => $result, redirect_url => $QN_URL . '&id=' . $id . '&action=edit'));
+        echo json_encode(array(status => 1, result => $result, redirect_url => $FB_URL['qn'] . '&id=' . $id . '&action=edit'));
         die();
     }
     

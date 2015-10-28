@@ -1,0 +1,56 @@
+ul.fb_question_content {
+    list-style-type: none;
+}
+ul.fb_question_content li {
+    margin-left: 20px;
+}
+ul.fb_question_content li > label {    
+    margin: 2px 0px 4px 0px;
+    display: block;    
+    overflow: hidden;
+}
+.fb_choice_wrapper {
+    float: left;
+    width: 22px;
+    padding-top: 2px;
+    position: relative;
+} 
+.fb_choice_wrapper > input {
+    margin-top: 2px;
+}
+.fb_wrap a {
+    text-decoration: none;
+    border: none !important;
+}
+.fb-move {
+    cursor: move;
+}
+.fb_choice_wrapper .fb-icon {
+    margin-left: 0px;
+}
+.single-quiz .entry-title {
+    display: none;
+}
+.fb_wrap button, .fb_wrap input[type="button"], .fb_wrap input[type="reset"], .fb_wrap input[type="submit"] {
+    text-transform: none;
+}
+.blockUI.blockOverlay:before {
+    height: 11px;
+    width: 43px;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    margin-left: -21px;
+    margin-top: -5px;
+    display: block;
+    -webkit-animation: spin 1s ease-in-out infinite;
+    -moz-animation: spin 1s ease-in-out infinite;
+    animation: spin 1s ease-in-out infinite;
+    content: "";
+    background: url(../images/ajax-loader.gif) center center;
+    background-size: cover;
+    line-height: 1;
+    text-align: center;
+    font-size: 2em;
+    color: rgba(0,0,0,.75);
+}

@@ -1,10 +1,10 @@
 <?php
-    global $wpdb, $current_user, $FB_TABLES, $QA_URL, $QN_URL;  
+    global $wpdb, $current_user, $FB_TABLE, $FB_URL;  
 
 ?>
 
 <div class="wrap fb-wrap">
-    <h1>All Questions <a href="<?php echo $QN_URL; ?>" class="page-title-action">Add New</a></h1>
+    <h1>All Questions <a href="<?php echo $FB_URL['qn']; ?>" class="page-title-action">Add New</a></h1>
     
     <table class="wp-list-table widefat fixed striped questions" id="questions-table">
         <thead>
@@ -23,7 +23,7 @@
         </thead>
         <tbody id="the-list">
         <?php
-            $rows = $wpdb->get_results("SELECT * FROM " . $FB_TABLES['questions'] . " WHERE 1 order by id desc");
+            $rows = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE 1 order by id desc");
             
             foreach ($rows as $row) {
                 
@@ -33,7 +33,7 @@
                 $cats_str = array();
                 if (!empty($cats)) {                    
                     foreach ($cats as $cat) {
-                        $rows2 = $wpdb->get_results("SELECT name FROM " . $FB_TABLES['questions_cat'] . " WHERE id=" . $cat);
+                        $rows2 = $wpdb->get_results("SELECT name FROM " . $FB_TABLE['questions_cat'] . " WHERE id=" . $cat);
                         $cats_str[] = $rows2[0]->name;
                     }
                 }
@@ -45,11 +45,11 @@
                     <div class="locked-indicator"></div>
                 </th>
                 <td><?php echo $row->id; ?></td>
-                <td><strong><a class="row-title" href="<?php echo $QN_URL . '&id=' . $row->id . '&action=edit'; ?>" title="Edit"><?php echo $row->title; ?></a></strong></td>
+                <td><strong><a class="row-title" href="<?php echo $FB_URL['qn'] . '&id=' . $row->id . '&action=edit'; ?>" title="Edit"><?php echo $row->title; ?></a></strong></td>
                 <td></td>
                 <td><?php echo $row->number_of_choices; ?></td>
                 <td><?php echo $row->points; ?></td>
-                <td><a href="<?php echo $QA_URL . '&author=' . $row->author; ?>"><?php echo $user->user_nicename; ?></a></td>
+                <td><a href="<?php echo $FB_URL['qa'] . '&author=' . $row->author; ?>"><?php echo $user->user_nicename; ?></a></td>
                 <td><?php echo $row->created_at; ?></td>
                 <td><?php echo $row->updated_at; ?></td>
                 <td><?php if (!empty($cats_str)) echo implode(", ", $cats_str); ?></td>                
@@ -65,6 +65,7 @@
         "aoColumnDefs": [
           { 'bSortable': false, 'aTargets': [ 0 ] }
         ],
-        "order": [[ 1, "desc" ]]
+        "order": [[ 1, "desc" ]],
+        "pageLength": 25
     });
 </script>

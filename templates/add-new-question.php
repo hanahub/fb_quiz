@@ -1,12 +1,12 @@
 <?php
-    global $wpdb, $FB_TABLES, $current_user;
+    global $wpdb, $FB_TABLE, $current_user;
     
     $id = $_REQUEST['id'];
     $action = $_REQUEST['action'];
     $edit_mode = 0;
     if (!empty($id) && is_numeric($id) && $action == 'edit') {
         $edit_mode = 1;
-        $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLES['questions'] . " WHERE id=" . $id );
+        $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE id=" . $id );
         $q_data = $dumb[0];
         
         $q_title = $q_data->title;
@@ -142,12 +142,12 @@
                                             $cats_ids = array();
                                             if (!empty($q_cats)) {                                                    
                                                 foreach ($q_cats as $cat) {
-                                                    $dumb = $wpdb->get_results("SELECT id FROM " . $FB_TABLES['questions_cat'] . " WHERE id=" . $cat);
+                                                    $dumb = $wpdb->get_results("SELECT id FROM " . $FB_TABLE['questions_cat'] . " WHERE id=" . $cat);
                                                     $cats_ids[] = $dumb[0]->id;
                                                 }
                                             }
                                         
-                                            $cats = $wpdb->get_results("SELECT * FROM " . $FB_TABLES['questions_cat'] );
+                                            $cats = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions_cat'] );
                                             foreach ($cats as $cat) {
                                                 if (in_array($cat->id, $cats_ids)) {
                                                     $dumb = "checked";
@@ -188,7 +188,7 @@
         
         $("#fb-choices-box .fb-remove").live("click", function(e) {
             $(this).parents(".fb-choice").fadeOut(200, function() {
-                $(this).parents(".fb-choice").remove();    
+                $(this).remove();    
             });
         });
         
@@ -275,7 +275,11 @@
             var $choices_list = $("#fb-choices .fb-choice");
             $choices_list.each(function(i, obj) {
                 choices['choices'].push([i + 1, $(obj).find('.fb-choice-name').html()]);
-                if ($(obj).find('.fb-correct-choice').is(":checked")) {
+                if (type != 'sorting') {
+                    if ($(obj).find('.fb-correct-choice').is(":checked")) {
+                        choices['correct'].push(i + 1);
+                    }
+                } else {
                     choices['correct'].push(i + 1);
                 }
             });

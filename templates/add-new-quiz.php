@@ -1,5 +1,5 @@
 <?php
-    global $wpdb, $FB_TABLES, $current_user;
+    global $wpdb, $FB_TABLE, $current_user;
     
     global $wp_rewrite;
     
@@ -8,7 +8,7 @@
     $edit_mode = 0;
     if (!empty($id) && is_numeric($id) && $action == 'edit') {
         $edit_mode = 1;
-        $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLES['quizzes'] . " WHERE id=" . $id );
+        $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['quizzes'] . " WHERE id=" . $id );
         $q_data = $dumb[0];
         
         $q_title = $q_data->title;
@@ -100,7 +100,7 @@
                             echo '<div class="ui-sortable" id="fb-choices">';
                             foreach ($q_questions as $question) {
                                 
-                                $dumb = $wpdb->get_row( "SELECT * FROM " . $FB_TABLES['questions']  . " WHERE id=" . $question );
+                                $dumb = $wpdb->get_row( "SELECT * FROM " . $FB_TABLE['questions']  . " WHERE id=" . $question );
                                 $question_title = $dumb->title;
                                 
                                 echo '
@@ -127,7 +127,7 @@
                         <legend>Add a question</legend>
                         <div class="fb-datatable-wrapper">
                         <?php
-                            $rows = $wpdb->get_results("SELECT * FROM " . $FB_TABLES['questions'] . " WHERE 1 order by id desc");
+                            $rows = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE 1 order by id desc");
                             echo '<table id="fb-questions-table" class="fb-datatable fb-fullwidth">';
                             foreach ($rows as $row) {
                                 echo '                                
@@ -167,7 +167,7 @@
                                 <label>Number of questions: </label><input type="number" value="3" id="fb-questions-num"/><input type="button" value="Add" id="fb-add-questions"/>
                             </div>
                             <?php
-                                $cats = $wpdb->get_results("SELECT * FROM " . $FB_TABLES['questions_cat'] );
+                                $cats = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions_cat'] );
                                 echo '<table id="fb-categories-table" class="fb-datatable fb-fullwidth">';
                                 
                                 foreach ($cats as $row) {
@@ -193,6 +193,7 @@
                                         searchPlaceholder: "Search a category",
                                         
                                     },
+                                    "pageLength": 25
                                 });                                
                             </script>    
                         </div>

@@ -1,10 +1,10 @@
 <?php
-    global $wpdb, $current_user, $FB_TABLES, $QA_URL, $UN_URL;  
+    global $wpdb, $current_user, $FB_TABLE, $FB_URL;  
 
 ?>
 
 <div class="wrap fb-wrap">
-    <h1>All Quizzes <a href="<?php echo $UN_URL; ?>" class="page-title-action">Add New</a></h1>
+    <h1>All Quizzes <a href="<?php echo $FB_URL['un']; ?>" class="page-title-action">Add New</a></h1>
     
     <table class="wp-list-table widefat fixed striped quizzes" id="quizzes-table">
         <thead>
@@ -22,7 +22,7 @@
         </thead>
         <tbody id="the-list">
         <?php
-            $rows = $wpdb->get_results("SELECT * FROM " . $FB_TABLES['quizzes'] . " WHERE 1 order by id desc");
+            $rows = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['quizzes'] . " WHERE 1 order by id desc");
             
             foreach ($rows as $row) {
                 
@@ -35,11 +35,17 @@
                     <div class="locked-indicator"></div>
                 </th>
                 <td><?php echo $row->id; ?></td>
-                <td><strong><a class="row-title" href="<?php echo $UN_URL . '&id=' . $row->id . '&action=edit'; ?>" title="Edit"><?php echo $row->title; ?></a></strong></td>
+                <td><strong><a class="row-title" href="<?php echo $FB_URL['un'] . '&id=' . $row->id . '&action=edit'; ?>" title="Edit this item"><?php echo $row->title; ?></a></strong>
+                    <div class="row-actions">
+                        <span class="edit"><a href="<?php echo $FB_URL['un'] . '&id=' . $row->id . '&action=edit'; ?>" title="Edit this item">Edit</a> | </span>
+                        <span class="trash"><a class="submitdelete" title="Move this item to the Trash" href="">Delete</a> | </span>
+                        <span class="view"><a href="<?php echo $FB_URL['quizzes'] . $row->id; ?>" title="View Quiz" rel="permalink">View</a></span>
+                    </div>
+                </td>
                 <td><?php echo ''; ?></td>
                 <td><?php echo $row->num_of_questions; ?></td>
                 <td><?php echo $row->passing_percentage; ?></td>
-                <td><a href="<?php echo $QA_URL . '&author=' . $row->author; ?>"><?php echo $user->user_nicename; ?></a></td>                
+                <td><a href="<?php echo $FB_URL['qa'] . '&author=' . $row->author; ?>"><?php echo $user->user_nicename; ?></a></td>                
                 <td><?php echo $row->created_at; ?></td>
                 <td><?php echo $row->updated_at; ?></td>                
             </tr>
@@ -54,6 +60,7 @@
         "aoColumnDefs": [
           { 'bSortable': false, 'aTargets': [ 0 ] }
         ],
-        "order": [[ 1, "desc" ]]
+        "order": [[ 1, "desc" ]],
+        "pageLength": 25
     });
 </script>

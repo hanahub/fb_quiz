@@ -5,7 +5,10 @@
     $student_id = 1;
     $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['quizzes'] . " WHERE id=" . $quiz_id );
     
-    if (count($dumb) == 0) return;
+    if (count($dumb) == 0)  {
+        echo '<p>error</p>';
+        return;
+    }
     
     
     $q_data = $dumb[0];
@@ -39,13 +42,13 @@
                 echo '<ul id="fb_question_' . $q->id . '" data-id="' . $q->id . '" data-type="' . $q->type . '" class="fb_question_content ' . $q->type . '">';
                 
                 $j = 1;
-                if ($q->type == 'sorting') {
-                    
+                if ($q->type == 'sorting') {                    
+                    shuffle($choices['choices']);                    
                     foreach ($choices['choices'] as $choice) {
                         
                         $choice_id = "fb_choice_{$i}_{$j}";
                         $choice_html = '
-                                <li data-id="' . $choice[0] . '"><div class="fb_choice_wrapper"><a href="javascript:void(0)" class="fb-move ui-state-default ui-sortable-handle"><i class="fb-icon icon-resize-vertical"></i></a></div>
+                                <li order-no="' . $j . '" data-id="' . $choice[0] . '"><div class="fb_choice_wrapper"><a href="javascript:void(0)" class="fb-move ui-state-default ui-sortable-handle"><i class="fb-icon icon-resize-vertical"></i></a></div>
                                 <label class="fb-move ui-state-default ui-sortable-handle" for="' . $choice_id . '">' . $choice[1] . '</label></li>
                             ';
                         
@@ -62,7 +65,7 @@
                         
                         $choice_id = "fb_choice_{$i}_{$j}";
                         $choice_html = '
-                                <li data-id="' . $choice[0] . '"><div class="fb_choice_wrapper"><input type="' . $input_type . '" name="fb_question_' . $i . '" id="' . $choice_id . '"/></div><label for="' . $choice_id . '">' . $choice[1] . '</label></li>
+                                <li order-no="' . $j . '" data-id="' . $choice[0] . '"><div class="fb_choice_wrapper"><input type="' . $input_type . '" name="fb_question_' . $i . '" id="' . $choice_id . '"/></div><label for="' . $choice_id . '">' . $choice[1] . '</label></li>
                             ';
                         
                         echo $choice_html;

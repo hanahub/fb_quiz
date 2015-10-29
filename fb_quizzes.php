@@ -41,7 +41,7 @@ class FB_Quizzes {
             add_action( 'wp_head', array( $this, 'ajaxurl' ) );
         }
         
-        //add_filter( 'the_title', array( $this, "the_title" ) );
+        add_filter( 'the_title', array( $this, "the_title" ) );
     }
     
     function register_styles() {        
@@ -109,7 +109,7 @@ class FB_Quizzes {
     }
     
     function plugin_deactivation() {
-        //wp_clear_scheduled_hook('wpbdp_listings_expiration_check');
+        
     }
     
     function query_vars( $query_vars ) {                
@@ -120,6 +120,8 @@ class FB_Quizzes {
     function body_class( $classes ) {        
         if ($this->is_quiz())
             $classes[] = 'single-quiz';
+        if ($this->is_result())
+            $classes[] = 'single-result';
         
         return $classes;
     }
@@ -153,8 +155,6 @@ class FB_Quizzes {
             'results/([0-9]+)/?$',
             'index.php?pagename=results&fb_id=$matches[1]',
             'top' );
-
-            
     }    
     
     function admin_menu() {   
@@ -179,8 +179,20 @@ class FB_Quizzes {
             if (is_numeric($quiz_id)) {
                 return $quiz_id;
             }
-        }
+        }        
+        return 0;
+    }    
+    
+    public function is_result() {
+        global $wp_query;                         
+        $name = $wp_query->get('name');
+        $result_id = $wp_query->get('fb_id');
         
+        if ($name == "results") {
+            if (is_numeric($result_id)) {
+                return $result_id;
+            }
+        }        
         return 0;
     }    
     
@@ -192,19 +204,18 @@ class FB_Quizzes {
                 return $this->quiz_page($quiz_id);
             }
         } else if ( is_page('results') ) {
-            $result_id = $wp_query->get("fb_id"); print_r($wp_query);
+            $result_id = $wp_query->get("fb_id");
             return $this->result_page($result_id);
         }
                  
         return $content;
     }
     
-    function the_title($title) {
-        $quiz_id = $this->is_quiz();
-        if ($quiz_id > 0) {
+    function the_title($title) {        
+        if (in_the_loop() && is_page(array("quizzes", "results"))) {
             return "";
         } else {
-            return $content;
+            return $title;
         }   
     }
     
@@ -217,7 +228,7 @@ class FB_Quizzes {
     }
     
     /* Display Result page on front-end */
-    public function result_page($quiz_id) {
+    public function result_page($result_id) {
         ob_start();
         include( FBQUIZ_TEMPLATES_PATH . '/result.php' );
         $html = ob_get_clean();        
@@ -261,6 +272,14 @@ class FB_Quizzes {
                 );               
         echo json_encode(array(status => 1, id => $wpdb->insert_id, redirect_url => $FB_URL['results'] . '/' . $wpdb->insert_id));
         die();
+    }
+    
+    public function findChoiceName($arr, $value) {
+        foreach ($arr as $a) {
+            if ($a[0] == $value) return $a[1];
+        }
+        
+        return ' - ';
     }
     
 }

@@ -54,3 +54,53 @@ ul.fb_question_content li > label {
     font-size: 2em;
     color: rgba(0,0,0,.75);
 }
+#fb_take_quiz_again {
+    float: left;
+}
+#fb_back {
+    float: right;
+}
+.fb_result_status {
+    width: 80px;
+    float: left;
+}
+.fb_result_content {
+    float: none;    
+    width: auto;
+    overflow: hidden;
+}
+.fb_explanation {
+    clear: both;
+}
+.fb_explanation fieldset {
+    padding: 10px;
+    border: 1px solid #ccc !important;
+    background: #fff;
+}
+.fb_explanation legend {
+    font-size: inherit;
+}
+.fb_explanation p {
+    margin-bottom: 0px;
+}
+.fb_answers ul {
+    margin-bottom: 10px;
+    margin-left: 28px;
+}
+.single-result .fb_wrap > .fb_row {
+    margin-bottom: 20px;
+}
+.fb_quiz_footer {
+    padding-top: 30px;
+}
+.fb_student_answers {
+    width: 48%;
+    display: inline-block;
+    padding-right: 2%;
+    float: left;
+}
+.fb_correct_answers {
+    width: 48%;
+    display: inline-block;
+    padding-right: 2%;
+}

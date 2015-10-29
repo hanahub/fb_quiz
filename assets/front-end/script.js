@@ -17,15 +17,16 @@ jQuery(document).ready(function($) {
             $choices_list = $(questions[i]).children("li");
             
             $choices_list.each(function(j, obj) {
-                choice_id = $(obj).attr("data-id");
-                dumb[0].push([j + 1, choice_id]);
+                choice_id = $(obj).attr("data-id");                
                 if (qtype != 'sorting') {
                     if ($(obj).find('input').is(":checked")) {
-                        dumb[1].push([j + 1, choice_id]);
+                        dumb[0].push(choice_id);
                     }
                 } else {
-                    dumb[1].push([j + 1, choice_id]);
+                    dumb[0].push(choice_id);
                 }
+                order_no = $(obj).attr("order-no");
+                dumb[1].push(order_no);
             });
             answers.push({'qid' : qid, 'answers' : dumb});
         }

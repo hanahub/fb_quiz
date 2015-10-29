@@ -43,10 +43,12 @@ class FB_Question {
                             'correct_explanation'   => $p['correct_explanation'],
                             'status'                => $p['status'],
                             'choices'               => serialize($p['choices']),
+                            'number_of_choices'     => $p['number_of_choices'],
                             'created_at'            => $created_at,
                             'updated_at'            => $updated_at
+                            
                         ),
-                    array('%d', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s')
+                    array('%d', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%d', '%s', '%s')
                 );               
         echo json_encode(array(status => 1, id => $wpdb->insert_id, redirect_url => $FB_URL['qn'] . '&id=' . $wpdb->insert_id . '&action=edit'));
         die();
@@ -71,10 +73,11 @@ class FB_Question {
                             'correct_explanation'   => $p['correct_explanation'],
                             'status'                => $p['status'],
                             'choices'               => serialize($p['choices']),                            
+                            'number_of_choices'     => $p['number_of_choices'],
                             'updated_at'            => $updated_at
                         ),
                     array('id' => $id),
-                    array('%d', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s'),
+                    array('%d', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%d', '%s'),
                     array('%d')
                 );               
         echo json_encode(array(status => 1, result => $result, redirect_url => $FB_URL['qn'] . '&id=' . $id . '&action=edit'));

@@ -68,9 +68,8 @@
                                 echo '<div class="ui-sortable" id="fb-choices">';
                                 foreach ($q_choices['choices'] as $choice) {
                                     $choice_checked = '';
-                                    if (in_array($choice[0], $q_choices['correct'])) $choice_checked = "checked";
+                                    if (is_array($q_choices['correct']) && in_array($choice[0], $q_choices['correct'])) $choice_checked = "checked";
                                     echo '
-                                    
                                     <div class="fb-choice">
                                         <a href="javascript:void(0)" class="fb-remove"><i class="fb-icon icon-minus-squared"></i></a>
                                         <a href="javascript:void(0)" class="fb-move ui-state-default ui-sortable-handle"><i class="fb-icon icon-resize-vertical"></i></a>
@@ -284,7 +283,9 @@
                 }
             });
             
-            var params = { 'title': title, 'correct_explanation': correct_explanation, 'type': type, 'status': status, 'points': points, 'author': author, 'cats': cats, 'choices': choices };
+            var number_of_choices = $choices_list.length;
+            
+            var params = { 'title': title, 'correct_explanation': correct_explanation, 'type': type, 'status': status, 'points': points, 'author': author, 'cats': cats, 'choices': choices, 'number_of_choices': number_of_choices };
             var data = {};
             if ($("#fb-edit-id").val() != '')
                 data = {'action' : 'fb_edit_question', 'params' : params, 'id' : $("#fb-edit-id").val()};

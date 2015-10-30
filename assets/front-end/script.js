@@ -42,4 +42,13 @@ jQuery(document).ready(function($) {
             }
         });
     });
+    
+    $(".fb_quiz_nav").click(function(e) {
+        $(".fb_quiz_nav").removeClass("fb_active");
+        $(this).addClass("fb_active");
+        
+        var num = $(this).attr("question-no");
+        $(".fb_question").css("display",  "none");
+        $("#fb_question" + num).css("display", "block");
+    });
 });

@@ -85,7 +85,7 @@
                     <div class="fb_question_title"><?php echo $o['title']; ?></div>
                     <div class="fb_answers">
                         <div class="fb_student_answers">
-                            <label>- Studnet Answers</label>
+                            <label>- Student Answers</label>
                             <ul><li><?php echo implode('</li><li>', $o['student_choices']); ?></li></ul>
                         </div>
                         <?php if ($o['correct'] != 'Correct') :?>

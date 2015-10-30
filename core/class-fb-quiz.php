@@ -11,6 +11,7 @@ class FB_Quiz {
     function __construct() {                                                    
         add_action( 'wp_ajax_fb_add_quiz', array( $this, 'add_quiz' ) );
         add_action( 'wp_ajax_fb_edit_quiz', array( $this, 'edit_quiz' ) );
+        add_action( 'wp_ajax_fb_get_quiz', array( $this, 'get_quiz' ) );
         
         add_action( 'wp_ajax_fb_get_random_questions_by_category', array( $this, 'get_random_questions_by_category' ) );
         
@@ -106,6 +107,27 @@ class FB_Quiz {
                     array('%d')
                 );               
         echo json_encode(array(status => 1, result => $result, redirect_url => $FB_URL['un'] . '&id=' . $id . '&action=edit'));
+        die();
+    }
+    
+    /* Return quiz info as JSON */
+    public function get_quiz() {
+        global $wpdb, $FB_TABLE;
+        $id = $_REQUEST['qid'];
+        
+        $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['quizzes'] . " WHERE id=" . $id );
+        $result = $dumb[0];
+        
+        $q_questions = unserialize($result->questions);
+        $questions = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE id IN (" . implode(", ", $q_questions) . ") ORDER BY FIELD(id, " . implode(", ", $q_questions) . ")" );        
+        
+        foreach ($questions as $q) {
+            $q->choices = unserialize($q->choices);
+            $q->cats = unserialize($q->cats);
+        }
+        $result->questions = $questions;
+        
+        echo json_encode(array(status => 1, result => $result));
         die();
     }
 }

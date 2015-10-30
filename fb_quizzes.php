@@ -34,7 +34,7 @@ class FB_Quizzes {
         add_filter( 'query_vars', array( $this, 'query_vars' ) );
         add_filter( 'the_content', array( $this, "the_content" ) );
         
-        add_action( 'wp_ajax_fb_add_answer', array( $this, 'add_answer' ) );       
+        add_action( 'wp_ajax_fb_add_answer', array( $this, 'add_answer' ) );
         add_action( 'wp_ajax_nopriv_fb_add_answer', array( $this, 'add_answer' ) );
         
         if (!is_admin()) { 
@@ -53,6 +53,15 @@ class FB_Quizzes {
     }     
     
     function register_scripts() {
+        wp_register_script( 'fb-global-script', FBQUIZ_URL . 'assets/global.js');
+        wp_enqueue_script( 'fb-global-script' );
+        
+        wp_register_script( 'fb-angular-script', FBQUIZ_URL . 'assets/angular/angular.min.js');
+        wp_enqueue_script( 'fb-angular-script' );
+        
+        wp_register_script( 'fb-multiple-quiz-script', FBQUIZ_URL . 'assets/front-end/multiple_quiz.js');
+        wp_enqueue_script( 'fb-multiple-quiz-script' );
+        
         wp_register_script( 'fb-blockui-script', FBQUIZ_URL . 'assets/jquery-blockui/jquery.blockUI.min.js', array('jquery') );
         wp_enqueue_script( 'fb-blockui-script' );
         
@@ -73,6 +82,9 @@ class FB_Quizzes {
     }     
     
     function register_plugin_scripts() {                    
+        wp_register_script( 'fb-global-script', FBQUIZ_URL . 'assets/global.js');
+        wp_enqueue_script( 'fb-global-script' );
+        
         wp_register_script( 'fb-blockui-script', FBQUIZ_URL . 'assets/jquery-blockui/jquery.blockUI.min.js', array('jquery') );
         wp_enqueue_script( 'fb-blockui-script' );
         
@@ -221,8 +233,10 @@ class FB_Quizzes {
     
     /* Display Quiz page on front-end */
     public function quiz_page($quiz_id) {
+        global $wpdb, $FB_TABLE;
         ob_start();
-        include( FBQUIZ_TEMPLATES_PATH . '/quiz.php' );
+        $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['quizzes'] . " WHERE id=" . $quiz_id );         
+        include( FBQUIZ_TEMPLATES_PATH . '/quiz_' . $dumb[0]->layout . '.php' );
         $html = ob_get_clean();        
         return $html;
     }

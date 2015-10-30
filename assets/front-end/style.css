@@ -20,7 +20,10 @@ ul.fb_question_content li > label {
 }
 .fb_wrap a {
     text-decoration: none;
-    border: none !important;
+    border: none;
+}
+.entry-content .fb_wrap a {
+    border: none;
 }
 .fb-move {
     cursor: move;
@@ -104,3 +107,27 @@ ul.fb_question_content li > label {
     display: inline-block;
     padding-right: 2%;
 }
+.fb_wrap.multiple .fb_quiz_left {
+    min-width: 80px;
+    width: 20%;
+    float: left;
+    padding: 5px 20px 0px 0px;
+}
+.fb_wrap.multiple .fb_quiz_right {
+    width: auto;
+    float: none;
+    overflow: hidden;
+    padding-left: 20px;    
+}
+.fb_wrap .fb_quiz_nav {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+    border: 1px solid #37a000 !important;
+}
+.fb_wrap .fb_quiz_nav:hover, .fb_wrap .fb_quiz_nav.fb_active {
+    color: #fff;
+    background: #37a000;
+}
+

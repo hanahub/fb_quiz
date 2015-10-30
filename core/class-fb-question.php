@@ -11,9 +11,8 @@ class FB_Question {
     function __construct() {
         add_action( 'wp_ajax_fb_add_cat', array( $this, 'add_category' ) );
         add_action( 'wp_ajax_fb_add_question', array( $this, 'add_question' ) );
-        add_action( 'wp_ajax_fb_edit_question', array( $this, 'edit_question' ) );
-        
-        
+        add_action( 'wp_ajax_fb_edit_question', array( $this, 'edit_question' ) );        
+        add_action( 'wp_ajax_fb_get_question', array( $this, 'get_question' ) );
     }
     
     /* Add question category */
@@ -81,6 +80,18 @@ class FB_Question {
                     array('%d')
                 );               
         echo json_encode(array(status => 1, result => $result, redirect_url => $FB_URL['qn'] . '&id=' . $id . '&action=edit'));
+        die();
+    }
+    
+    /* Return question info as JSON */
+    public function get_question() {
+        global $wpdb, $FB_TABLE;
+        $id = $_REQUEST['qid'];
+        
+        $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE id=" . $id );
+        $result = $dumb[0];
+        
+        echo json_encode(array(status => 1, result => $result));
         die();
     }
     

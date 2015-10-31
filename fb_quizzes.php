@@ -98,6 +98,14 @@ class FB_Quizzes {
     function plugin_activation() {
         
         global $user_ID;
+        
+        $my_quizzes['post_type']    = 'page';
+        $my_quizzes['post_name']    = 'my-quizzes';
+        $my_quizzes['post_content'] = '';
+        $my_quizzes['post_parent']  = 0;
+        $my_quizzes['post_author']  = $user_ID;
+        $my_quizzes['post_status']  = 'publish';
+        $my_quizzes['post_title']   = 'My Quizzes';
 
         $results['post_type']    = 'page';
         $results['post_name']    = 'results';
@@ -115,9 +123,9 @@ class FB_Quizzes {
         $quizzes['post_status']  = 'publish';
         $quizzes['post_title']   = 'Quizzes';        
         
-        //$pageid = wp_insert_post($results);
-        //$pageid = wp_insert_post($quizzes);
-        
+        if (!get_page_by_path("my-quizzes")) $pageid = wp_insert_post($my_quizzes);
+        if (!get_page_by_path("results")) $pageid = wp_insert_post($results);
+        if (!get_page_by_path("quizzes")) $pageid = wp_insert_post($quizzes);        
     }
     
     function plugin_deactivation() {
@@ -167,6 +175,11 @@ class FB_Quizzes {
             'results/([0-9]+)/?$',
             'index.php?pagename=results&fb_id=$matches[1]',
             'top' );
+            
+        add_rewrite_rule(
+            'my-quizzes/([0-9]+)/?$',
+            'index.php?pagename=my-quizzes&fb_id=$matches[1]',
+            'top' );            
     }    
     
     function admin_menu() {   
@@ -213,18 +226,21 @@ class FB_Quizzes {
         if ( is_page( 'quizzes' ) ) {        
             $quiz_id = $this->is_quiz();
             if ($quiz_id > 0) {  
-                return $this->quiz_page($quiz_id);
+                return $this->quizzes_page($quiz_id);
             }
         } else if ( is_page('results') ) {
             $result_id = $wp_query->get("fb_id");
             return $this->result_page($result_id);
+        } else if ( is_page('my-quizzes') ) {
+            $quiz_id = $wp_query->get("fb_id");
+            return $this->my_quizzes_page($quiz_id);
         }
                  
         return $content;
     }
     
     function the_title($title) {        
-        if (in_the_loop() && is_page(array("quizzes", "results"))) {
+        if (in_the_loop() && is_page(array("quizzes", "results", "my-quizzes"))) {
             return "";
         } else {
             return $title;
@@ -232,7 +248,7 @@ class FB_Quizzes {
     }
     
     /* Display Quiz page on front-end */
-    public function quiz_page($quiz_id) {
+    public function quizzes_page($quiz_id) {
         global $wpdb, $FB_TABLE;
         ob_start();
         $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['quizzes'] . " WHERE id=" . $quiz_id );         
@@ -245,6 +261,19 @@ class FB_Quizzes {
     public function result_page($result_id) {
         ob_start();
         include( FBQUIZ_TEMPLATES_PATH . '/result.php' );
+        $html = ob_get_clean();        
+        return $html;
+    }
+    
+    /* Display My Quizzes page on front-end */
+    public function my_quizzes_page($quiz_id) {
+        ob_start();
+        if (!empty($quiz_id) && is_numeric($quiz_id)) {
+            include( FBQUIZ_TEMPLATES_PATH . '/my-quizzes_single.php' );
+        } else {
+            include( FBQUIZ_TEMPLATES_PATH . '/my-quizzes.php' );
+        }
+        
         $html = ob_get_clean();        
         return $html;
     }

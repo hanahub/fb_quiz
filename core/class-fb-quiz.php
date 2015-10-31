@@ -123,6 +123,7 @@ class FB_Quiz {
         
         foreach ($questions as $q) {
             $q->choices = unserialize($q->choices);
+            unset($q->choices['correct']);
             $q->cats = unserialize($q->cats);
         }
         $result->questions = $questions;

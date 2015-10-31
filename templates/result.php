@@ -70,11 +70,20 @@
     }
     
     $a_title = $q_data->title . ' Results &nbsp;&nbsp;&nbsp;&nbsp;' . $correct_points . '/' . $total_points . ' points (' . $result_percentage . '%) ' . $result_status;
+    
+    $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['answers'] . " WHERE id=" . $result_id );
+    $wpdb->update(
+        $FB_TABLE['answers'],
+        array('score' => $result_percentage, 'result' => $result_status),
+        array('id' => $result_id),
+        array('%d', '%s'),
+        array('%d')
+    );
             
 ?>
 
 <div class="fb_wrap">
-    <h3 class="fb_quiz_title"><?php echo $a_title; ?></h3>    
+    <h3 class="fb_title"><?php echo $a_title; ?></h3>    
     
     <?php
         foreach ($output as $o) {
@@ -111,8 +120,7 @@
     <div class="fb_quiz_footer">
         <input type="button" id="fb_take_quiz_again" value="Take Quiz Again" onclick="javascript: location.href = '<?php echo $FB_URL['quizzes'] . $quiz_id; ?>';"/>
         <input type="button" id="fb_back" value="Back"/>
-        <input type="hidden" id="fb_quiz_id" value="<?php echo $quiz_id; ?>"/>
-        <input type="hidden" id="fb_student_id" value="<?php echo $student_id; ?>"/>
+        <input type="hidden" id="fb_quiz_id" value="<?php echo $quiz_id; ?>"/>        
     </div>
 </div>
 

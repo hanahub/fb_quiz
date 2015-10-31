@@ -90,6 +90,9 @@ class FB_Question {
         
         $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE id=" . $id );
         $result = $dumb[0];
+        $result->cats = unserialize($result->cats);
+        $result->choices = unserialize($result->choices);
+        unset($result->choices['correct']);
         
         echo json_encode(array(status => 1, result => $result));
         die();

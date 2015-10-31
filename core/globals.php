@@ -12,6 +12,7 @@
         'ua' => admin_url( 'admin.php?page=' . 'all_quizzes' ),
         'un' => admin_url( 'admin.php?page=' . 'add_new_quiz' ),
         'quizzes' => home_url( '/quizzes/' ),
+        'my_quizzes' => home_url( '/my-quizzes/' ),
         'results' => home_url( '/results/' )
     );
  

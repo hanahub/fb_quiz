@@ -91,7 +91,7 @@
                         <legend>Add a choice</legend>
                         <div class="fb-input-wrapper1">
                             <div class="fb-input1"><input type="text" name="fb-input-choice" id="fb-input-choice" placeholder="Choice..."/></div>
-                            <div class="fb-input2"><input type="button" name="fb-button-add" id="fb-button-add" value="Add"/></div>
+                            <div class="fb-input2"><input type="button" class="button" name="fb-button-add" id="fb-button-add" value="Add"/></div>
                         </div>
                     </fieldset>
                 </div>
@@ -103,8 +103,11 @@
             <div class="fb-fieldset fb-connected-to-box fb-row">
                 <fieldset>
                     <legend>Connected to</legend>
-                    <div class="fb-input-wrapper1">
-                                    
+                    <div class="fb-input-wrapper2">
+                    <?php
+                        global $quizzes;
+                        $quizzes->fb_question->print_quizzes_connected($id);
+                    ?>                
                     </div>
                 </fieldset>
             </div>

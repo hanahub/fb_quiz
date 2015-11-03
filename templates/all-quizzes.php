@@ -42,7 +42,19 @@
                         <span class="view"><a href="<?php echo $FB_URL['quizzes'] . $row->id; ?>" title="View Quiz" rel="permalink">View</a></span>
                     </div>
                 </td>
-                <td><?php echo ''; ?></td>
+                <td>
+                <?php
+                    $q_connected_to = unserialize($row->connected_to);
+                    if (!empty($q_connected_to)) {
+                        $dumb = array();
+                        foreach ($q_connected_to as $q_connection) {
+                            $obj = get_post_type_object($q_connection);                    
+                            array_push($dumb, $obj->label);
+                        } 
+                        echo implode(', ', $dumb);
+                    }
+                
+                ?></td>
                 <td><?php echo $row->num_of_questions; ?></td>
                 <td><?php echo $row->passing_percentage; ?></td>
                 <td><a href="<?php echo $FB_URL['qa'] . '&author=' . $row->author; ?>"><?php echo $user->user_nicename; ?></a></td>                

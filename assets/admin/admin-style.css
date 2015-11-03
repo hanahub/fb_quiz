@@ -12,6 +12,7 @@
 }
 .fb-fieldset legend {
     font-size: 14px;
+    font-weight: 700;
 }
 .fb-input-wrapper1 {
     display: table;
@@ -25,10 +26,12 @@
 }
 .fb-input1 > input {
     width: 100%;
+    float: left;
 }
 .fb-input2 > input {
     width: 80px;
-    margin-left: 10px;
+    margin-left: 10px !important;
+    float: left;
 }
 .fb-half-left, .fb-half-right {
     width: 48%;
@@ -116,7 +119,7 @@ input.fb-correct-choice {
     width: 135px;
 }
 .fb-table1 td:nth-of-type(1) {
-    width: 100px;
+    width: 108px;
 }
 #fb-point {
     width: 80px;
@@ -129,6 +132,10 @@ input.fb-correct-choice {
     display: block;
     font-weight: bold;
     border-bottom: 1px solid #eee;
+}
+.fb-table1 td > label, 
+.fb-table2 td > label {
+    font-weight: 700;
 }
 .fb-wrap .postbox .inside {
     padding-bottom: 0px;
@@ -263,10 +270,11 @@ table.dataTable.no-footer {
     border-left: 0px;
 }
 .fb-datatable-wrapper .dataTables_filter input:focus {
-    box-shadow: none;
-    border-color: #ccc;
+    /*box-shadow: none;
+    border-color: #ccc;*/
 }
-.fb-datatable-wrapper .dataTables_filter .icon-search {
+.fb-datatable-wrapper .dataTables_filter .icon-search,
+.fb-filters .icon-search {
     height: 25px;
     width: 25px;
     vertical-align: top;
@@ -279,19 +287,49 @@ table.dataTable.no-footer {
     color: #999;
     line-height: 25px;
 }
+.fb-filters .icon-search {
+    position: absolute;
+    z-index: 2;
+    height: 22px;
+    box-shadow: none;
+    border: none;
+    margin: 2px 0px 2px 3px;
+    font-size: 14px;
+}
+.fb-filter-label {
+    margin-right: 10px;
+    line-height: 27px;
+    width: auto !important;
+}
+.fb-filters > * {
+    margin-right: 10px;
+}
+.fb-filters label {
+    position: relative;
+    height: 27px;
+    display: inline-block;
+    margin-right: 10px;
+}
+.fb-filters input {
+    position: absolute;
+    padding-left: 25px;
+    width: 100%;
+}
 #fb-passing-percentage {
     width: 40px;
 }
-.fb-quiz-checkboxes label {
+.fb-quiz-checkboxes td > label {
     width: 100%;
     display: block;
     margin-bottom: 10px;
+    font-weight: 500;
 }
 #fb-questions-box {
     max-width: 850px;
 }
 #fb-questions-num {
     width: 46px;
+    margin-right: 4px;
 }
 .fb-questions-num-wrapper {
     position: absolute;
@@ -303,14 +341,64 @@ table.dataTable.no-footer {
     position: relative;
     top: 5px;
 }
-.fb-questions-num-wrapper input[type="button"] {
-    padding: 2px 5px;
-}
 #fb-add-quiz-box2 .fb-datatable-wrapper {
     position: relative;
 }
 .fb-disabled {
     color: #ccc;
+}
+#fb-add-connection {
+    vertical-align: top;
+}
+#fb-post-type {
+    margin: 0px 4px 0px 0px;
+    width: 140px;
+}
+.fb-checklist {
+    margin-left: 14px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    overflow: auto;
+}
+.fb-checklist span {
+    margin-right: 25px;
+    font-size: 13px;
+    line-height: 1.8em;
+    cursor: default;
+    max-width: 100%;
+    text-overflow: ellipsis;
+}
+.fb-checklist span a {
+    margin: 1px 0 0 -17px;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    text-indent: 0;
+    position: absolute;
+}
+.fb-checklist span, .fb-checklist span a {
+    overflow: hidden;
+    display: block;
+    float: left;
+}
+.fb-checklist span a:before {
+    background: 0 0;
+    color: #b4b9be;
+    content: '\f153';
+    display: block;
+    font: 400 16px/20px dashicons;
+    speak: none;
+    height: 20px;
+    text-align: center;
+    width: 20px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.fb-checklist span a:hover:before {
+    color: #c00;
+}
+.fb-filters {
+    margin: 5px 0px 10px 0px;
 }
 
 

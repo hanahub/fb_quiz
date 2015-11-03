@@ -164,7 +164,7 @@
                         <legend>Pools (categories)</legend>
                         <div class="fb-datatable-wrapper">
                             <div class="fb-questions-num-wrapper">
-                                <label>Number of questions: </label><input type="number" value="3" id="fb-questions-num"/><input type="button" value="Add" id="fb-add-questions"/>
+                                <label>Number of questions: </label><input type="number" value="3" id="fb-questions-num"/><input type="button" class="button" value="Add" id="fb-add-questions"/>
                             </div>
                             <?php
                                 $cats = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions_cat'] );
@@ -204,9 +204,35 @@
         <div class="fb-fieldset fb-connected-to-box fb-row">
             <fieldset>
                 <legend>Connected to</legend>
-                <div class="fb-input-wrapper1">
-                                
+                <div class="fb-input-wrapper2">
+                <div id="fb-post-type-values" class="fb-checklist">
+                <?php
+                    if (!empty($q_connected_to)) {
+                        foreach ($q_connected_to as $q_connection) {
+                            $obj = get_post_type_object($q_connection);
+                            
+                            echo '<span><a class="ntdelbutton" data-value="' . $q_connection . '">X</a>&nbsp;' . $obj->label . '</span>';
+                        }
+                    }
+                ?>
                 </div>
+                <?php
+                    $args = array( 
+                        'public'   => true,
+                        '_builtin' => false
+                    );
+                    $post_types = get_post_types( $args, 'objects' ); 
+
+                    echo '<select id="fb-post-type">';
+                    foreach ( $post_types as $post_type ) {                        
+                       echo '<option value="' . $post_type->name . '">' . $post_type->label . '</option>';
+                    }
+                    echo '</select>';
+                    echo '<input type="button" class="button" value="Add" id="fb-add-connection">';                    
+                ?>                
+                <input type="hidden" class="fb-checklist-values" id="fb-connections" value=""/>
+                </div>
+                
             </fieldset>            
         </div>
         
@@ -237,7 +263,10 @@
                 question_id = $(obj).attr("data-id");
                 questions.push(question_id);                
             });            
-            var connected_to = '';
+            var connected_to = [];
+            $(".fb-checklist span > a").each(function(i, obj) {
+                connected_to.push($(obj).attr("data-value"));
+            });
             var passing_percentage = $("#fb-passing-percentage").val();
             var layout = $("#fb-quiz-layout").val();
             var allow_skipping = $("#fb-allow-skipping").is(":checked") ? 1 : 0;
@@ -349,6 +378,15 @@
                 disableSkipping();
             } else {
                 enableSkipping();                
+            }
+        });
+        
+        $("#fb-add-connection").click(function(e) {
+            value = $("#fb-post-type").val();
+            current_value = $("#fb-connections").val();
+            if ($('.fb-checklist span > a[data-value="' + value + '"]').length == 0) {            
+                input = '<span><a class="ntdelbutton" data-value="' + value + '">X</a>&nbsp;' + $("#fb-post-type option:selected").text() + '</span>';
+                $("#fb-post-type-values").append(input);
             }
         });
         

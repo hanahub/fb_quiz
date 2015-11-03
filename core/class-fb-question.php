@@ -113,6 +113,13 @@ class FB_Question {
         $html = ob_get_clean();        
         echo $html;
     }
+    
+    /* Print quizzes connected to a question */
+    public function print_quizzes_connected($id) {        
+        global $wpdb, $FB_TABLE;
+        $dumb = $wpdb->get_results("SELECT title FROM " . $FB_TABLE['quizzes'] . " WHERE questions LIKE '%" . '"' . $id . '"' . "%'", ARRAY_A );
+        echo implode(", ", array_column($dumb, 'title'));
+    }
 }
   
 ?>

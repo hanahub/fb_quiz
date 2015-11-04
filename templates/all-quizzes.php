@@ -1,11 +1,47 @@
 <?php
     global $wpdb, $current_user, $FB_TABLE, $FB_URL;  
 
+    $title = $_REQUEST['title'];    
+    $num_questions = $_REQUEST['num_questions'];
+    $passing_percentage = $_REQUEST['passing_percentage'];
+    $author = $_REQUEST['author'];
+    $from_date = $_REQUEST['from_date'];
+    $to_date = $_REQUEST['to_date'];
+    
+    $where = ' WHERE 1 ';
+    
+    if (!empty($title)) {
+        $where = $where . ' AND title like "%' . $title . '%"';
+    }
+    if ($num_questions != '') {
+        $where = $where . " AND num_of_questions={$num_questions}";
+    }
+    if ($passing_percentage != '') {
+        $where = $where . " AND passing_percentage={$passing_percentage}";
+    }
+    if (!empty($from_date)) {
+        $where = $where . " AND created_at>='{$from_date}'";
+    }
+    if (!empty($to_date)) {
+        $where = $where . " AND created_at<='{$to_date}'";
+    }
 ?>
 
 <div class="wrap fb-wrap">
     <h1>All Quizzes <a href="<?php echo $FB_URL['un']; ?>" class="page-title-action">Add New</a></h1>
-    
+    <div class="fb-filters">        
+        <label class="fb-filter-label">Filter By: </label>
+        <label style="width: 120px;"><i class="fb-icon icon-search"></i><input type="search" id="fb_title" placeholder="Title" value="<?php echo $title; ?>"></label>        
+        <select id="fb_course_id" style="display: none;">
+            <option value="">All</option>
+        </select>
+        <label style="width: 195px;"><i class="fb-icon icon-search"></i><input type="number" id="fb_num_questions" placeholder="Number of Questions" value="<?php echo $num_questions; ?>"></label>
+        <label style="width: 180px;"><i class="fb-icon icon-search"></i><input type="number" id="fb_passing_percentage" placeholder="Passing Percentage" value="<?php echo $passing_percentage; ?>"></label>
+        <label style="width: 120px;"><i class="fb-icon icon-search"></i><input type="search" id="fb_author" placeholder="Author" value="<?php echo $author; ?>"></label>
+        <label style="width: 125px;"><i class="fb-icon icon-search"></i><input type="search" id="fb_from_date" placeholder="From Date" value="<?php echo $from_date; ?>"></label>
+        <label style="width: 125px;"><i class="fb-icon icon-search"></i><input type="search" id="fb_to_date" placeholder="To Date" value="<?php echo $to_date; ?>"></label>
+        <label style="width: 80px;"><input id="fb_filter_button" type="button" class="button" value="Filter"></label>        
+    </div>
     <table class="wp-list-table widefat fixed striped quizzes" id="quizzes-table">
         <thead>
             <tr>
@@ -22,11 +58,17 @@
         </thead>
         <tbody id="the-list">
         <?php
-            $rows = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['quizzes'] . " WHERE 1 order by id desc");
+            
+            $sql = "SELECT * FROM {$FB_TABLE['quizzes']} {$where} order by id desc";
+            echo $sql;
+            $rows = $wpdb->get_results($sql);
             
             foreach ($rows as $row) {
                 
-                $user = get_user_by("id", $row->author);
+                $user = get_user_by("id", $row->author);                
+                if (!empty($author) && strpos($user->user_nicename, $author) === false) {
+                    continue;
+                }
                 
         ?>
             <tr id="post-<?php echo $row->id; ?>>" class="">
@@ -68,11 +110,54 @@
     </table>
 </div>
 <script>
-    jQuery( "#quizzes-table" ).DataTable({
-        "aoColumnDefs": [
-          { 'bSortable': false, 'aTargets': [ 0 ] }
-        ],
-        "order": [[ 1, "desc" ]],
-        "pageLength": 25
+    jQuery(document).ready(function($) {
+        var ua = "<?php echo $FB_URL['ua']; ?>";
+        $( "#quizzes-table" ).DataTable({
+            "aoColumnDefs": [
+              { 'bSortable': false, 'aTargets': [ 0 ] }
+            ],
+            "order": [[ 1, "desc" ]],
+            "pageLength": 25,
+            "lengthChange": false,
+            "searching": false
+        });
+        
+        $("#fb_from_date").datepicker({
+            dateFormat: 'yy-mm-dd'
+        });
+        $("#fb_to_date").datepicker({
+            dateFormat: 'yy-mm-dd'
+        });
+        
+        $("#fb_filter_button").click(function(e) {
+            title = $("#fb_title").val();            
+            num_questions = $("#fb_num_questions").val();
+            passing_percentage = $("#fb_passing_percentage").val();
+            author = $("#fb_author").val();            
+            from_date = $("#fb_from_date").val();
+            to_date = $("#fb_to_date").val();
+            
+            if (title != '') {
+                ua = ua + '&title=' + title; 
+            }
+            if (num_questions != '') {
+                ua = ua + '&num_questions=' + num_questions; 
+            }            
+            if (passing_percentage != '') {
+                ua = ua + '&passing_percentage=' + passing_percentage; 
+            }
+            if (author != '') {
+                ua = ua + '&author=' + author; 
+            }
+            if (from_date != '') {
+                ua = ua + '&from_date=' + from_date; 
+            }
+            if (to_date != '') {
+                ua = ua + '&to_date=' + to_date; 
+            }
+            
+            window.location.href = ua;            
+        });
     });
+    
 </script>

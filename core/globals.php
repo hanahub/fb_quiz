@@ -3,7 +3,8 @@
         'questions_cat' => 'fb_questions_cat',
         'questions' => 'fb_questions',
         'quizzes' => 'fb_quizzes',
-        'answers' => 'fb_answers'
+        'answers' => 'fb_answers',
+        'quiz_relationships' => 'fb_quiz_relationships'
     );
     
     $GLOBALS['FB_URL'] = array(

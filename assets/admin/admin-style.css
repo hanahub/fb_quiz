@@ -400,6 +400,10 @@ table.dataTable.no-footer {
 .fb-filters {
     margin: 5px 0px 10px 0px;
 }
+#fb-choices .ui-state-default {
+    border: none;
+    background: none;
+}
 
 
 

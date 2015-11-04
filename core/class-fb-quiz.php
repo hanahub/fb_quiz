@@ -12,6 +12,7 @@ class FB_Quiz {
         add_action( 'wp_ajax_fb_add_quiz', array( $this, 'add_quiz' ) );
         add_action( 'wp_ajax_fb_edit_quiz', array( $this, 'edit_quiz' ) );
         add_action( 'wp_ajax_fb_get_quiz', array( $this, 'get_quiz' ) );
+        add_action( 'wp_ajax_fb_remove_relationship', array( $this, 'remove_relationship' ) );
         
         add_action( 'wp_ajax_fb_get_random_questions_by_category', array( $this, 'get_random_questions_by_category' ) );
         
@@ -105,7 +106,36 @@ class FB_Quiz {
                     array('id' => $id),
                     array('%s', '%s', '%d', '%s', '%d', '%s', '%d', '%s', '%d', '%d', '%d', '%d', '%s', '%s'),
                     array('%d')
-                );               
+                );
+        
+        if (!empty($p['questions'])) {
+            foreach ($p['questions'] as $question_id) {
+                $link = $wpdb->get_row( "SELECT * FROM {$FB_TABLE['quiz_relationships']} WHERE quiz_id={$id} AND question_id={$question_id}" );
+                if ($link !== null) {                
+                    $dumb = $wpdb->update( $FB_TABLE['quiz_relationships'],
+                            array(
+                                    'quiz_id'       => $id,
+                                    'question_id'   => $question_id
+                                ),
+                            array(
+                                   'quiz_id'       => $id,
+                                   'question_id'   => $question_id
+                                ),
+                            array('%d', '%d'),
+                            array('%d', '%d')
+                        );
+                } else {
+                    $wpdb->insert( $FB_TABLE['quiz_relationships'],
+                        array(
+                                'quiz_id'       => $id,
+                                'question_id'   => $question_id
+                            ),                    
+                        array('%d', '%d')
+                    );
+                }
+                
+            }
+        }
         echo json_encode(array(status => 1, result => $result, redirect_url => $FB_URL['un'] . '&id=' . $id . '&action=edit'));
         die();
     }
@@ -131,6 +161,19 @@ class FB_Quiz {
         echo json_encode(array(status => 1, result => $result));
         die();
     }
+    
+    /* Ajax call to remove a question in a quiz */
+    public function remove_relationship() {
+        global $wpdb, $FB_TABLE;
+        
+        $id = $_REQUEST['id'];
+        $p = $_REQUEST['params'];
+        
+        $result = $wpdb->delete($FB_TABLE['quiz_relationships'], array('quiz_id' => $id, 'question_id' => $p['question_id']), array('%d', '%d'));
+        
+        echo json_encode(array(status => 1, result => $result));
+        die();
+    }        
 }
 
 

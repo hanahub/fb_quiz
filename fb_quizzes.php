@@ -35,7 +35,7 @@ class FB_Quizzes {
         add_filter( 'the_content', array( $this, "the_content" ) );
         
         add_action( 'wp_ajax_fb_add_answer', array( $this, 'add_answer' ) );
-        add_action( 'wp_ajax_nopriv_fb_add_answer', array( $this, 'add_answer' ) );
+        add_action( 'wp_ajax_nopriv_fb_add_answer', array( $this, 'add_answer' ) );        
         
         if (!is_admin()) { 
             add_action( 'wp_head', array( $this, 'ajaxurl' ) );

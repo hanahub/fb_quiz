@@ -2,11 +2,33 @@
     global $wpdb, $current_user, $FB_TABLE, $FB_URL;  
 
     $title = $_REQUEST['title'];
+    $quiz_id = $_REQUEST['quiz_id'];
+    $num_choices = $_REQUEST['num_choices'];
+    $points = $_REQUEST['points'];
+    $author = $_REQUEST['author'];
+    $from_date = $_REQUEST['from_date'];
+    $to_date = $_REQUEST['to_date'];
     
-    $where = '1';
-    if (!empty($title)) {
-        $where = 'title like "%' . $title . '%"';
+    
+    $where = ' WHERE 1 ';
+    if (!empty($quiz_id)) {        
+        $where = " INNER JOIN {$FB_TABLE['quiz_relationships']} ON {$FB_TABLE['questions']}.id={$FB_TABLE['quiz_relationships']}.question_id {$where} AND {$FB_TABLE['quiz_relationships']}.quiz_id={$quiz_id}";
     }
+    if (!empty($title)) {
+        $where = $where . ' AND title like "%' . $title . '%"';
+    }
+    if ($num_choices != '') {
+        $where = $where . " AND number_of_choices={$num_choices}";
+    }
+    if ($points != '') {
+        $where = $where . " AND points={$points}";
+    }
+    if (!empty($from_date)) {
+        $where = $where . " AND created_at>='{$from_date}'";
+    }
+    if (!empty($to_date)) {
+        $where = $where . " AND created_at<='{$to_date}'";
+    }    
     
 ?>
 
@@ -15,21 +37,21 @@
     <div class="fb-filters">        
         <label class="fb-filter-label">Filter By: </label>
         <label style="width: 120px;"><i class="fb-icon icon-search"></i><input type="search" id="fb_title" placeholder="Title" value="<?php echo $title; ?>"></label>        
-        <select name="fb_quiz_title">
+        <select id="fb_quiz_id">
             <option value="">All</option>
             <?php
                 $rows = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['quizzes'] . " ORDER BY title ASC");                        
                 foreach ($rows as $row) {
-                    echo '<option value="' . $row->title . '">' . $row->title . '</option>';
+                    if ($row->id == $quiz_id) echo '<option value="' . $row->id . '" selected>' . $row->title . '</option>';
+                    else echo '<option value="' . $row->id . '">' . $row->title . '</option>';
                 }
             ?>
         </select>
-        
-        <label style="width: 175px;"><i class="fb-icon icon-search"></i><input type="number" id="fb_num_choices" placeholder="Number of Choices"></label>
-        <label style="width: 100px;"><i class="fb-icon icon-search"></i><input type="number" id="fb_points" placeholder="Points"></label>
-        <label style="width: 120px;"><i class="fb-icon icon-search"></i><input type="search" id="fb_author" placeholder="Author"></label>
-        <label style="width: 115px;"><i class="fb-icon icon-search"></i><input type="text" id="fb_from_date" placeholder="From Date"></label>
-        <label style="width: 115px;"><i class="fb-icon icon-search"></i><input type="text" id="fb_to_date" placeholder="To Date"></label>
+        <label style="width: 175px;"><i class="fb-icon icon-search"></i><input type="number" id="fb_num_choices" placeholder="Number of Choices" value="<?php echo $num_choices; ?>"></label>
+        <label style="width: 100px;"><i class="fb-icon icon-search"></i><input type="number" id="fb_points" placeholder="Points" value="<?php echo $points; ?>"></label>
+        <label style="width: 120px;"><i class="fb-icon icon-search"></i><input type="search" id="fb_author" placeholder="Author" value="<?php echo $author; ?>"></label>
+        <label style="width: 125px;"><i class="fb-icon icon-search"></i><input type="search" id="fb_from_date" placeholder="From Date" value="<?php echo $from_date; ?>"></label>
+        <label style="width: 125px;"><i class="fb-icon icon-search"></i><input type="search" id="fb_to_date" placeholder="To Date" value="<?php echo $to_date; ?>"></label>
         <label style="width: 80px;"><input id="fb_filter_button" type="button" class="button" value="Filter"></label>        
     </div>
     <table class="wp-list-table widefat fixed striped questions" id="questions-table">
@@ -49,11 +71,16 @@
         </thead>
         <tbody id="the-list">
         <?php
-            $rows = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE {$where} order by id desc");
+            $sql = "SELECT * FROM " . $FB_TABLE['questions'] . " {$where} order by {$FB_TABLE['questions']}.id desc";            
+            $rows = $wpdb->get_results($sql);
             
             foreach ($rows as $row) {
                 
                 $user = get_user_by("id", $row->author);
+                if (!empty($author) && strpos($user->user_nicename, $author) === false) {
+                    continue;
+                }
+                
                 $cats = unserialize($row->cats);
                 
                 $cats_str = array();
@@ -114,10 +141,36 @@
         
         $("#fb_filter_button").click(function(e) {
             title = $("#fb_title").val();
+            quiz_id = $("#fb_quiz_id").val();
+            num_choices = $("#fb_num_choices").val();
+            points = $("#fb_points").val();
+            author = $("#fb_author").val();            
+            from_date = $("#fb_from_date").val();
+            to_date = $("#fb_to_date").val();
+            
             if (title != '') {
                 qa = qa + '&title=' + title; 
             }
-            location.href = qa;            
+            if (quiz_id != '') {
+                qa = qa + '&quiz_id=' + quiz_id; 
+            }
+            if (num_choices != '') {
+                qa = qa + '&num_choices=' + num_choices; 
+            }
+            if (points != '') {
+                qa = qa + '&points=' + points; 
+            }
+            if (author != '') {
+                qa = qa + '&author=' + author; 
+            }
+            if (from_date != '') {
+                qa = qa + '&from_date=' + from_date; 
+            }
+            if (to_date != '') {
+                qa = qa + '&to_date=' + to_date; 
+            }
+            
+            window.location.href = qa;            
         });
     });
     

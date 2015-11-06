@@ -193,7 +193,7 @@ class FB_Quizzes {
         add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'Add New Quiz', 'manage_options', 'add_new_quiz', array( $this, 'render_new_quiz_page' ) );
         add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'All Questions', 'manage_options', 'all_questions', array( $this, 'render_all_questions_page' ) );
         add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'Add New Question', 'manage_options', 'add_new_question', array( $this, 'render_new_question_page' ) );
-        add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'Reporting', 'manage_options', 'reporting', 'addnew_page_callback' );        
+        add_submenu_page( 'quizzes_manager', 'FB Quizzes', 'Reporting', 'manage_options', 'reporting', array( $this, 'render_reporting_page' ) );
         
         remove_submenu_page('quizzes_manager', 'quizzes_manager');
     }
@@ -281,6 +281,21 @@ class FB_Quizzes {
         return $html;
     }
     
+    /* Render Reporting page on dashboard */
+    public function render_reporting_page() {
+        ob_start();
+        $quiz_id = $_REQUEST['quiz']; 
+        if (!empty($quiz_id) && is_numeric($quiz_id)) {
+            include( FBQUIZ_TEMPLATES_PATH . '/reporting_detail.php' );
+        } else {
+            include( FBQUIZ_TEMPLATES_PATH . '/reporting.php' );    
+        }
+        
+        $html = ob_get_clean();        
+        echo $html;
+    }
+    
+    /* Render Quizzes list page on dashboard */
     function render_all_quizzes_page() {
         $this->fb_quiz->all_quizzes_page();
     }
@@ -324,8 +339,41 @@ class FB_Quizzes {
         foreach ($arr as $a) {
             if ($a[0] == $value) return $a[1];
         }
-        
         return ' - ';
+    }
+    
+    public function getTotalAttempts($quiz_id, $student_id = null) {
+        global $wpdb, $FB_TABLE;
+        
+        if ($student_id != null) {
+            $add_query = " AND student_id={$student_id}";
+        } else {
+            $add_query = "";
+        }                                                                                                            
+        $dumb = $wpdb->get_results("SELECT id FROM " . $FB_TABLE['answers'] . " WHERE quiz_id={$quiz_id}{$add_query}");
+        return $wpdb->num_rows;
+    }
+    
+    public function getLastScore($quiz_id, $student_id) {
+        global $wpdb, $FB_TABLE;
+        
+        $dumb = $wpdb->get_results("SELECT score, result FROM " . $FB_TABLE['answers'] . " WHERE student_id={$student_id} AND quiz_id={$quiz_id} ORDER BY id DESC");                        
+        return $dumb[0]->score;
+    }
+    
+    public function getHighestScore($quiz_id, $student_id) {
+        global $wpdb, $FB_TABLE;
+        
+        $dumb = $wpdb->get_results("SELECT max(score) as score, result FROM " . $FB_TABLE['answers'] . " WHERE student_id={$student_id} AND quiz_id={$quiz_id}");
+        return $dumb[0]->score;
+    }
+    
+    
+    
+    public function getAverageScore($quiz_id) {
+        global $wpdb, $FB_TABLE;
+        $dumb = $wpdb->get_results("SELECT AVG(score) as result FROM " . $FB_TABLE['answers'] . " WHERE quiz_id={$quiz_id}");
+        return round($dumb[0]->result);
     }
     
 }

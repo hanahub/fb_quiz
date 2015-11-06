@@ -59,6 +59,7 @@ input.fb-correct-choice {
 }
 .fb-choice {
     margin-bottom: 10px;
+    min-height: 20px;
 }
 .ui-sortable-handle, .fb-move {
     cursor: move;
@@ -269,9 +270,10 @@ table.dataTable.no-footer {
 .fb-datatable-wrapper .dataTables_filter input {
     border-left: 0px;
 }
-.fb-datatable-wrapper .dataTables_filter input:focus {
-    /*box-shadow: none;
-    border-color: #ccc;*/
+.fb-add-choice-box .fb-datatable-wrapper .dataTables_filter input:focus,
+.fb-connections-box .fb-datatable-wrapper .dataTables_filter input:focus {
+    box-shadow: none;
+    border-color: #ccc;
 }
 .fb-datatable-wrapper .dataTables_filter .icon-search,
 .fb-filters .icon-search {
@@ -354,7 +356,7 @@ table.dataTable.no-footer {
     margin: 0px 4px 0px 0px;
     width: 140px;
 }
-.fb-checklist {
+/*.fb-checklist {
     margin-left: 14px;
     margin-bottom: 10px;
     font-size: 12px;
@@ -396,13 +398,16 @@ table.dataTable.no-footer {
 }
 .fb-checklist span a:hover:before {
     color: #c00;
-}
+}*/
 .fb-filters {
-    margin: 5px 0px 10px 0px;
+    margin: 8px 0px 10px 0px;
 }
 #fb-choices .ui-state-default {
     border: none;
     background: none;
+}
+.fb-wrap #cb {
+    vertical-align: middle;
 }
 
 

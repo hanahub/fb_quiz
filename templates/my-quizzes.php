@@ -1,6 +1,6 @@
 <?php
 
-    global $wpdb, $FB_TABLE, $FB_URL, $user_ID;
+    global $wpdb, $FB_TABLE, $FB_URL, $user_ID, $quizzes;
 
     $rows = $wpdb->get_results("SELECT q.id as qid, q.title as title, count(a.quiz_id) as attempts, a.id as aid FROM " . $FB_TABLE['quizzes'] . 
             " as q INNER JOIN " . $FB_TABLE['answers'] . " as a ON a.quiz_id=q.id WHERE a.student_id=" . $user_ID . " GROUP BY a.quiz_id" );              
@@ -26,11 +26,8 @@
         <?php
             $i = 1;
             foreach ($rows as $row) {
-                $dumb = $wpdb->get_results("SELECT score, result FROM " . $FB_TABLE['answers'] . " WHERE student_id={$user_ID} AND quiz_id={$row->qid} ORDER BY id DESC");                
-                $last_score = $dumb[0]->score;
-                
-                $dumb = $wpdb->get_results("SELECT max(score) as score, result FROM " . $FB_TABLE['answers'] . " WHERE student_id={$user_ID} AND quiz_id={$row->qid}");
-                $highest_score = $dumb[0]->score;
+                $last_score = $quizzes->getLastScore($row->qid, $user_ID);
+                $highest_score = $quizzes->getHighestScore($row->qid, $user_ID);
                 
                 /*<td><a class="fb_link" href="' . $FB_URL['my-quizzes'] . $row->qid . '">' . $row->title . '</a></td>*/
                 echo '

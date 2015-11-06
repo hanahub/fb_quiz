@@ -59,8 +59,7 @@
         <tbody id="the-list">
         <?php
             
-            $sql = "SELECT * FROM {$FB_TABLE['quizzes']} {$where} order by id desc";
-            echo $sql;
+            $sql = "SELECT * FROM {$FB_TABLE['quizzes']} {$where} order by id desc";            
             $rows = $wpdb->get_results($sql);
             
             foreach ($rows as $row) {
@@ -90,8 +89,8 @@
                     if (!empty($q_connected_to)) {
                         $dumb = array();
                         foreach ($q_connected_to as $q_connection) {
-                            $obj = get_post_type_object($q_connection);                    
-                            array_push($dumb, $obj->label);
+                            $obj = get_post($q_connection);                    
+                            array_push($dumb, $obj->post_title);
                         } 
                         echo implode(', ', $dumb);
                     }

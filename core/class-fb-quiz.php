@@ -106,36 +106,8 @@ class FB_Quiz {
                     array('id' => $id),
                     array('%s', '%s', '%d', '%s', '%d', '%s', '%d', '%s', '%d', '%d', '%d', '%d', '%s', '%s'),
                     array('%d')
-                );
+                );        
         
-        if (!empty($p['questions'])) {
-            foreach ($p['questions'] as $question_id) {
-                $link = $wpdb->get_row( "SELECT * FROM {$FB_TABLE['quiz_relationships']} WHERE quiz_id={$id} AND question_id={$question_id}" );
-                if ($link !== null) {                
-                    $dumb = $wpdb->update( $FB_TABLE['quiz_relationships'],
-                            array(
-                                    'quiz_id'       => $id,
-                                    'question_id'   => $question_id
-                                ),
-                            array(
-                                   'quiz_id'       => $id,
-                                   'question_id'   => $question_id
-                                ),
-                            array('%d', '%d'),
-                            array('%d', '%d')
-                        );
-                } else {
-                    $wpdb->insert( $FB_TABLE['quiz_relationships'],
-                        array(
-                                'quiz_id'       => $id,
-                                'question_id'   => $question_id
-                            ),                    
-                        array('%d', '%d')
-                    );
-                }
-                
-            }
-        }
         echo json_encode(array(status => 1, result => $result, redirect_url => $FB_URL['un'] . '&id=' . $id . '&action=edit'));
         die();
     }

@@ -36,31 +36,7 @@ angular.module('MultipleQuizModule', [])
                     result.push({'qid' : $scope.questions[i].id, 'answers' : answers});
                 }
                 
-                $timeout(function () { 
-                    jQuery( ".fb_question_content.sorting" ).sortable({
-                        create: function(event, ui) {
-                            var choices = jQuery(this).children("li");
-                            var sorting_answer = [];
-                            choices.each(function(j, obj) {
-                                choice_id = jQuery(obj).attr("data-id");                                                
-                                sorting_answer.push(choice_id);
-                            });
-                            
-                            result[$scope.questionNum - 1].answers[0] = sorting_answer;
-                            
-                        },
-                        update: function(event, ui) {
-                            var choices = jQuery(this).children("li");
-                            var sorting_answer = [];
-                            choices.each(function(j, obj) {
-                                choice_id = jQuery(obj).attr("data-id");                                                
-                                sorting_answer.push(choice_id);
-                            });
-                            
-                            result[$scope.questionNum - 1].answers[0] = sorting_answer;
-                        }
-                    });                    
-                });                
+                handleSortableQuestion();                    
                 
                 fb_unblock(".fb_wrap");
             }).error(function(data, status, headers, config) {
@@ -70,8 +46,34 @@ angular.module('MultipleQuizModule', [])
         }).error(function(data, status, headers, config) {
             fb_error();
         });
-        
-        
+    }
+    
+    function handleSortableQuestion() {
+        $timeout(function () {
+            jQuery( ".fb_question_content.sorting" ).sortable({
+                create: function(event, ui) {
+                    var choices = jQuery(this).children("li");
+                    var sorting_answer = [];
+                    choices.each(function(j, obj) {
+                        choice_id = jQuery(obj).attr("data-id");                                                
+                        sorting_answer.push(choice_id);
+                    });
+                    
+                    result[$scope.questionNum - 1].answers[0] = sorting_answer;
+                    
+                },
+                update: function(event, ui) {
+                    var choices = jQuery(this).children("li");
+                    var sorting_answer = [];
+                    choices.each(function(j, obj) {
+                        choice_id = jQuery(obj).attr("data-id");                                                
+                        sorting_answer.push(choice_id);
+                    });
+                    
+                    result[$scope.questionNum - 1].answers[0] = sorting_answer;
+                }
+            });
+        });
     }
     
     angular.element(document).ready(function () {
@@ -82,6 +84,8 @@ angular.module('MultipleQuizModule', [])
         $scope.questionNum = n + 1;
         $scope.question = $scope.quiz['questions'][n];
         $scope.quesionTitle = $scope.questionNum + '. ' + $scope.question['title'] + ' (' + $scope.question['points'] + ' points)';
+        
+        handleSortableQuestion();                    
     }
     
     $scope.answerClicked = function () {

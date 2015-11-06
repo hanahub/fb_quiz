@@ -1,6 +1,6 @@
 <?php
     global $user_ID;
-    $student_id = $user_ID;            
+    $student_id = $user_ID;
 ?>
 
 <div class="fb_wrap {{ layout }}" ng-app="MultipleQuizModule" ng-controller="MultipleQuizController">    

@@ -25,6 +25,14 @@
     } else {
         $id = '';        
     }
+    
+    $cpt = array();
+    $cpt_labels = array();
+    $post_types = get_post_types( array( 'public' => true, '_builtin' => false ), 'objects' );                        
+    foreach ( $post_types as $post_type ) {                         
+       array_push($cpt, $post_type->name);
+       $cpt_labels[$post_type->name] = $post_type->label;
+    }
 ?>
 
 <div class="wrap fb-wrap">
@@ -152,6 +160,7 @@
                                     search: '<i class="fb-icon icon-search"></i>',
                                     searchPlaceholder: "Search a question",                
                                 },
+                                "pageLength": 5
                             });
                         </script>    
                         </div>
@@ -193,7 +202,7 @@
                                         searchPlaceholder: "Search a category",
                                         
                                     },
-                                    "pageLength": 25
+                                    "pageLength": 5
                                 });                                
                             </script>    
                         </div>
@@ -201,39 +210,65 @@
                 </div>
             </div>            
         </div>            
-        <div class="fb-fieldset fb-connected-to-box fb-row">
+        <div class="fb-fieldset fb-connections-box fb-row">
             <fieldset>
                 <legend>Connected to</legend>
-                <div class="fb-input-wrapper2">
-                <div id="fb-post-type-values" class="fb-checklist">
-                <?php
-                    if (!empty($q_connected_to)) {
-                        foreach ($q_connected_to as $q_connection) {
-                            $obj = get_post_type_object($q_connection);
-                            
-                            echo '<span><a class="ntdelbutton" data-value="' . $q_connection . '">X</a>&nbsp;' . $obj->label . '</span>';
+                <div class="fb-input-wrapper">
+                    <div id="fb-connections">
+                    <?php
+                        if (!empty($q_connected_to)) {
+                            foreach ($q_connected_to as $q_connection) {                                
+                                $fb_connection = get_post($q_connection);                                
+                                echo '
+                                    <div class="fb-choice" data-id="' . $q_connection . '">
+                                        <a href="javascript:void(0)" class="fb-remove"><i class="fb-icon icon-minus-squared"></i></a>                                        
+                                        <span class="fb-choice-name">[' . $cpt_labels[$fb_connection->post_type] . '] ' . $fb_connection->post_title . '</span>
+                                    </div>';
+                            }
                         }
-                    }
-                ?>
+                    ?>
+                    </div>
+                    <div class="fb-datatable-wrapper">
+                    <?php
+                        
+                        $rows = get_posts(array('post_type' => $cpt, 'posts_per_page' => -1, 'post_status' => 'publish'));
+                        
+                        echo '<table id="fb-connections-table" class="fb-datatable fb-fullwidth">';
+                        foreach ($rows as $row) {
+                            echo '                                
+                            <tr id="connection_row_' . $row->ID . '"><td>
+                                <div class="fb-choice">
+                                    <a data-id="' . $row->ID . '" href="javascript:void(0)" class="fb-add-connections"><i class="fb-icon icon-plus-squared"></i></a>                                        
+                                    <span class="fb-choice-name">[' . $cpt_labels[$row->post_type] . '] ' . $row->post_title . '</span>
+                                </div>
+                            
+                            </td></tr>';
+                        }
+                        echo '</table>';
+                    ?>
+                    <script>
+                        jQuery( "#fb-connections-table" ).DataTable({
+                            "aoColumnDefs": [
+                              { 'bSortable': false, 'aTargets': [ 0 ] }
+                            ],
+                            "ordering": false,
+                            "info": false,
+                            "language": {
+                                search: '<i class="fb-icon icon-search"></i>',
+                                searchPlaceholder: "Search",                
+                                "paginate": {
+                                    "previous": "<",
+                                    "next": ">"
+                                }
+                            },
+                            "pageLength": 5
+                        });
+                    </script>    
+                    </div>
+                    <input type="hidden" class="fb-checklist-values" id="fb-connections" value=""/>
                 </div>
-                <?php
-                    $args = array( 
-                        'public'   => true,
-                        '_builtin' => false
-                    );
-                    $post_types = get_post_types( $args, 'objects' ); 
-
-                    echo '<select id="fb-post-type">';
-                    foreach ( $post_types as $post_type ) {                        
-                       echo '<option value="' . $post_type->name . '">' . $post_type->label . '</option>';
-                    }
-                    echo '</select>';
-                    echo '<input type="button" class="button" value="Add" id="fb-add-connection">';                    
-                ?>                
-                <input type="hidden" class="fb-checklist-values" id="fb-connections" value=""/>
-                </div>
-                
-            </fieldset>            
+            </fieldset>
+                        
         </div>
         
         
@@ -257,16 +292,18 @@
             var title = $("#fb-quiz-title").val();
             var description = $("#fb-quiz-description").hasClass("tmce-active") ? tinyMCE.get("fb-quiz-description").getContent() : $("#fb-quiz-description").val();
             var author = $("#fb-author").val();
-            var questions = [];
+            var questions = [], connected_to = [];
             var $choices_list = $("#fb-choices .fb-choice");            
             $choices_list.each(function(i, obj) {
                 question_id = $(obj).attr("data-id");
                 questions.push(question_id);                
-            });            
-            var connected_to = [];
-            $(".fb-checklist span > a").each(function(i, obj) {
-                connected_to.push($(obj).attr("data-value"));
             });
+            var $connections_list = $("#fb-connections .fb-choice");            
+            $connections_list.each(function(i, obj) {
+                connection_id = $(obj).attr("data-id");
+                connected_to.push(connection_id);                
+            });
+            
             var passing_percentage = $("#fb-passing-percentage").val();
             var layout = $("#fb-quiz-layout").val();
             var allow_skipping = $("#fb-allow-skipping").is(":checked") ? 1 : 0;
@@ -301,7 +338,7 @@
             id = $(this).attr("data-id");
             title = $(this).next(".fb-choice-name").text();
             if ( $("#fb-choices .fb-choice[data-id='" + id + "']").length != 0 ) {
-                alert("The question is already added to the list.");
+                alert("This question was already added to the list.");
             } else {            
                 row = ' \
                         <div class="fb-choice" data-id="' + id + '"> \
@@ -350,13 +387,21 @@
                     $("#fb-questions-total").text(questions_total);
                 });                
             }
+        });
+        
+        $("#fb-connections .fb-remove").live("click", function(e) {
+            var dumb = $(this).parents(".fb-choice");
+            id = $(dumb).attr("data-id");
                         
+            $(dumb).fadeOut(200, function() {
+                $(this).remove();
+                $("#connection_row_" + id).show();
+            });
             
         });
         
         $("#fb-categories-table .fb-add").live("click", function(e) {
-            id = $(this).attr("data-id");
-            
+            id = $(this).attr("data-id");            
         });
         
         $("#fb-add-questions").click(function(e) {
@@ -404,12 +449,22 @@
             }
         });
         
-        $("#fb-add-connection").click(function(e) {
-            value = $("#fb-post-type").val();
-            current_value = $("#fb-connections").val();
-            if ($('.fb-checklist span > a[data-value="' + value + '"]').length == 0) {            
-                input = '<span><a class="ntdelbutton" data-value="' + value + '">X</a>&nbsp;' + $("#fb-post-type option:selected").text() + '</span>';
-                $("#fb-post-type-values").append(input);
+        $(".fb-add-connections").click(function(e) {
+            id = $(this).attr("data-id");
+            title = $(this).next(".fb-choice-name").text();
+            
+            if ( $("#fb-connections .fb-choice[data-id='" + id + "']").length != 0 ) {
+                alert("This item was already added to the list.");
+            } else {            
+                row = ' \
+                        <div class="fb-choice" data-id="' + id + '"> \
+                            <a href="javascript:void(0)" class="fb-remove"><i class="fb-icon icon-minus-squared"></i></a> \
+                            <span class="fb-choice-name">' + title + '</span> \
+                        </div> \
+                       ';            
+                $(this).parents("tr").fadeOut(200, function() {
+                    $("#fb-connections").append(row);
+                });
             }
         });
         

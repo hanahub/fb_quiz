@@ -19,7 +19,7 @@ class FB_Quiz {
     }
     
     /* Display all questions page */
-    public function all_quizzes_page() {
+    public function all_quizzes_page() {        
         ob_start();
         include( FBQUIZ_TEMPLATES_PATH . '/all-quizzes.php' );
         $html = ob_get_clean();        
@@ -132,6 +132,14 @@ class FB_Quiz {
         
         echo json_encode(array(status => 1, result => $result));
         die();
+    }
+    
+    /* Delete a quiz by id */
+    public function delete_quiz($id) {
+        global $wpdb, $FB_TABLE;
+        
+        $wpdb->delete("{$FB_TABLE['quizzes']}", array('id' => $id));
+        $wpdb->delete("{$FB_TABLE['quiz_relationships']}", array('quiz_id' => $id));        
     }
     
     /* Ajax call to remove a question in a quiz */

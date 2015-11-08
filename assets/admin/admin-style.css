@@ -409,6 +409,22 @@ table.dataTable.no-footer {
 .fb-wrap #cb {
     vertical-align: middle;
 }
+.fb-wrap table.wp-list-table {
+    width: 100% !important;
+    display: block;
+}
+.fb-wrap .dataTables_wrapper .dataTables_length {
+    float: right;
+    margin-top: 10px;
+}
+.fb-wrap .dataTables_wrapper .dataTables_paginate {
+    float: none;
+    text-align: center;
+    margin-top: 10px;
+}
+#fb_delete_selected {
+    float: left;
+}
 
 
 

@@ -24,6 +24,30 @@
             foreach ($rows as $row) {        
                 $user = get_user_by("id", $row->id);        
                 
+                $attempts = $quizzes->getTotalAttempts($quiz_id, $row->id);
+                if ($attempts == 0) continue;
+                
+                $sql = "SELECT passing_percentage FROM {$FB_TABLE['quizzes']} where id={$quiz_id}";
+                $dumb = $wpdb->get_results($sql);
+                $passing_percentage = $dumb[0]->passing_percentage;
+                
+                $last_score = $quizzes->getLastScore($quiz_id, $row->id);
+                if (isset($last_score)) {
+                    if ($last_score >= $passing_percentage)
+                        $last_score = $last_score . '%(Passed)';
+                    else
+                        $last_score = $last_score . '%(Failed)';
+                }
+                
+                $highest_score = $quizzes->getHighestScore($quiz_id, $row->id);
+                if (isset($highest_score)) {
+                    if ($highest_score >= $passing_percentage)
+                        $highest_score = $highest_score . '%(Passed)';    
+                    else
+                        $highest_score = $highest_score . '%(Failed)';    
+                }
+                
+                
         ?>
             <tr id="post-<?php echo $row->id; ?>>">
                 <th scope="row" class="check-column">
@@ -31,9 +55,9 @@
                     <div class="locked-indicator"></div>
                 </th>                
                 <td><strong><a class="row-title" href=""><?php echo $user->user_nicename; ?></a></strong></td>                
-                <td><?php echo $quizzes->getTotalAttempts($quiz_id, $row->id); ?></td>
-                <td><?php echo $quizzes->getLastScore($quiz_id, $row->id); ?></td>                
-                <td><?php echo $quizzes->getHighestScore($quiz_id, $row->id); ?></td>
+                <td><?php echo $attempts; ?></td>
+                <td><?php echo $last_score; ?></td>                
+                <td><?php echo $highest_score; ?></td>
             </tr>
         <?php 
             }

@@ -94,8 +94,7 @@ class FB_Quizzes {
         wp_enqueue_script('jquery-ui-datepicker');
         wp_enqueue_style('jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
         
-        wp_register_script( 'fb-quizzes-script', FBQUIZ_URL . 'assets/admin/admin-script.js', array('jquery', 'jquery-ui-sortable') );
-        wp_enqueue_script( 'fb-quizzes-script' );
+        wp_enqueue_script( 'fb-quizzes-script', FBQUIZ_URL . 'assets/admin/admin-script.js', array('jquery', 'jquery-ui-sortable'), '1.0.0', true );        
     }
     
     function plugin_activation() {
@@ -355,20 +354,16 @@ class FB_Quizzes {
     }
     
     public function getLastScore($quiz_id, $student_id) {
-        global $wpdb, $FB_TABLE;
-        
+        global $wpdb, $FB_TABLE;        
         $dumb = $wpdb->get_results("SELECT score, result FROM " . $FB_TABLE['answers'] . " WHERE student_id={$student_id} AND quiz_id={$quiz_id} ORDER BY id DESC");                        
         return $dumb[0]->score;
     }
     
     public function getHighestScore($quiz_id, $student_id) {
-        global $wpdb, $FB_TABLE;
-        
+        global $wpdb, $FB_TABLE;        
         $dumb = $wpdb->get_results("SELECT max(score) as score, result FROM " . $FB_TABLE['answers'] . " WHERE student_id={$student_id} AND quiz_id={$quiz_id}");
         return $dumb[0]->score;
-    }
-    
-    
+    }   
     
     public function getAverageScore($quiz_id) {
         global $wpdb, $FB_TABLE;

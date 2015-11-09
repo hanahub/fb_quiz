@@ -8,6 +8,10 @@
  */    
 class FB_Question {
     
+    /**
+    * Adds various ajax handlers for question actions    
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function __construct() {
         add_action( 'wp_ajax_fb_add_cat', array( $this, 'add_category' ) );
         add_action( 'wp_ajax_fb_add_question', array( $this, 'add_question' ) );
@@ -15,7 +19,10 @@ class FB_Question {
         add_action( 'wp_ajax_fb_get_question', array( $this, 'get_question' ) );
     }
     
-    /* Add question category */
+    /**
+    * Adds question category
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     function add_category() {
         global $wpdb, $FB_TABLE;
         $cat = $_REQUEST['cat'];
@@ -25,7 +32,10 @@ class FB_Question {
         die();
     }
     
-    /* Add new question info */
+    /**
+    * Stores new question info into question table
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     function add_question() {
         global $wpdb, $FB_TABLE, $FB_URL;
         $p = $_REQUEST['params'];
@@ -53,7 +63,10 @@ class FB_Question {
         die();
     }
     
-    /* Edit existing question info */
+    /**
+    * Updates existing question info
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     function edit_question() {
         global $wpdb, $FB_TABLE, $FB_URL;
         
@@ -83,7 +96,37 @@ class FB_Question {
         die();
     }
     
-    /* Return question info as JSON */
+    /**
+    * Deletes a question info from question table
+    * @param int question ID
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
+    public function delete_question($id) {
+        global $wpdb, $FB_TABLE;
+        
+        $dumb = $wpdb->get_results("SELECT id, questions FROM " . $FB_TABLE['quizzes'] . " WHERE questions LIKE '%" . '"' . $id . '"' . "%'", ARRAY_A );        
+        foreach ($dumb as $row) {
+            $questions = unserialize($row['questions']);
+            if (($key = array_search($id, $questions)) !== false)
+                unset($questions[$key]);
+            
+            $result = $wpdb->update( $FB_TABLE['quizzes'],
+                    array(                            
+                            'questions' => serialize($questions)
+                        ),
+                    array('id' => $row['id']),
+                    array('%s'),
+                    array('%d')
+                );
+        }
+        
+        $wpdb->delete("{$FB_TABLE['questions']}", array('id' => $id));
+    }
+    
+    /**
+    * Returns question info as JSON
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     public function get_question() {
         global $wpdb, $FB_TABLE;
         $id = $_REQUEST['qid'];
@@ -98,7 +141,10 @@ class FB_Question {
         die();
     }
     
-    /* Display all questions page */
+    /**
+    * Displays all questions page
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     public function all_questions_page() {
         ob_start();
         include( FBQUIZ_TEMPLATES_PATH . '/all-questions.php' );
@@ -106,7 +152,10 @@ class FB_Question {
         echo $html;
     }
     
-    /* Display new question page */
+    /**
+    * Displays new questions page
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     public function new_question_page() {        
         ob_start();
         include( FBQUIZ_TEMPLATES_PATH . '/add-new-question.php' );
@@ -114,7 +163,11 @@ class FB_Question {
         echo $html;
     }
     
-    /* Print quizzes connected to a question */
+    /**
+    * Prints quizzes connected to a question
+    * @param int question ID
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     public function print_quizzes_connected($id) {        
         global $wpdb, $FB_TABLE;
         $dumb = $wpdb->get_results("SELECT title FROM " . $FB_TABLE['quizzes'] . " WHERE questions LIKE '%" . '"' . $id . '"' . "%'", ARRAY_A );

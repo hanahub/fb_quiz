@@ -79,7 +79,7 @@
                     <tr class="fb-quiz-checkboxes">
                         <td colspan="2">
                             <label for="fb-allow-skipping"><input type="checkbox" name="fb-allow-skipping" id="fb-allow-skipping" <?php if ($q_allow_skipping == 1) echo "checked"; ?>>Allow Skipping questions (if one question per page layout)</label>
-                            <label for="fb-immediate-feedback"><input type="checkbox" name="fb-immediate-feedback" id="fb-immediate-feedback" <?php if ($q_immediate_feedback == 1) echo "checked"; ?>>Immediate Feedback</label>
+                            <!--<label for="fb-immediate-feedback"><input type="checkbox" name="fb-immediate-feedback" id="fb-immediate-feedback" <?php if ($q_immediate_feedback == 1) echo "checked"; ?>>Immediate Feedback</label>-->
                             <label for="fb-random-questions"><input type="checkbox" name="fb-random-questions" id="fb-random-questions" <?php if ($q_random_questions == 1) echo "checked"; ?>>Random Questions Order</label>
                             <label for="fb-random-choices"><input type="checkbox" name="fb-random-choices" id="fb-random-choices" <?php if ($q_random_choices == 1) echo "checked"; ?>>Random Choices Order</label>
                         </td>
@@ -158,9 +158,14 @@
                                 "info": false,
                                 "language": {
                                     search: '<i class="fb-icon icon-search"></i>',
-                                    searchPlaceholder: "Search a question",                
+                                    searchPlaceholder: "Search a question",
+                                    "paginate": {
+                                        "previous": "<",
+                                        "next": ">",
+                                    }
                                 },
-                                "pageLength": 5
+                                "pageLength": 25,
+                                
                             });
                         </script>    
                         </div>
@@ -200,7 +205,10 @@
                                     "language": {
                                         search: '<i class="fb-icon icon-search"></i>',
                                         searchPlaceholder: "Search a category",
-                                        
+                                        "paginate": {
+                                            "previous": "<",
+                                            "next": ">",
+                                        }
                                     },
                                     "pageLength": 5
                                 });                                

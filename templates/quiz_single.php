@@ -24,6 +24,7 @@
     $q_immediate_feedback = $q_data->immediate_feedback;
     $q_random_questions = $q_data->random_questions;
     $q_random_choices = $q_data->random_choices;        
+    
 ?>
 
 <div class="fb_wrap">
@@ -35,6 +36,8 @@
         $questions = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE id IN (" . implode(", ", $q_questions) . ") ORDER BY FIELD(id, " . implode(", ", $q_questions) . ")" );
         
         $i = 1;
+        if ($q_random_questions == 1) shuffle($questions);
+        
         foreach ($questions as $q) {
             $choices = unserialize($q->choices);
             echo '<div class="fb_row">';
@@ -42,6 +45,7 @@
                 echo '<ul id="fb_question_' . $q->id . '" data-id="' . $q->id . '" data-type="' . $q->type . '" class="fb_question_content ' . $q->type . '">';
                 
                 $j = 1;
+                if ($q_random_choices == 1) shuffle($choices['choices']);
                 if ($q->type == 'sorting') {                    
                     shuffle($choices['choices']);                    
                     foreach ($choices['choices'] as $choice) {

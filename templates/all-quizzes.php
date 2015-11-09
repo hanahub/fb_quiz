@@ -65,19 +65,19 @@
         <label style="width: 80px; margin-right: 2px;"><input id="fb_filter_button" type="button" class="button" value="Filter"></label>        
         <label style="width: 80px;"><a href="<?php echo $FB_URL['ua']; ?>" id="fb_reset_button" class="button">Reset</a></label>
     </div>
-    <div class="fb-data-table-wrap">
+    <div class="fb-data-table-wrap" id="quizzes-table-wrap">
         <table class="wp-list-table widefat fixed striped quizzes fb-data-table" id="quizzes-table">
             <thead>
                 <tr>
                     <td id="cb" class="manage-column column-cb check-column"><label class="screen-reader-text" for="cb-select-all-1">Select All</label><input id="cb-select-all-1" type="checkbox"></td>
-                    <th scope="col" id="column-quiz-id" class="manage-column column-primary sortable desc">Quiz ID</th>
-                    <th scope="col" id="column-quiz-title" class="manage-column column-primary sortable desc">Quiz Title</th>
-                    <th scope="col" id="column-connected-to" class="manage-column column-primary">Connected To</th>
-                    <th scope="col" id="column-number-of-questions" class="manage-column column-primary sortable desc">Number of Questions</th>
-                    <th scope="col" id="column-passing-percentage" class="manage-column column-primary sortable desc">Passing Percentage</th>
-                    <th scope="col" id="column-author-name" class="manage-column column-primary">Author Name</th>
-                    <th scope="col" id="column-created-at" class="manage-column column-primary sortable desc">Created At</th>
-                    <th scope="col" id="column-updated-at" class="manage-column column-primary sortable desc">Updated At</th>                
+                    <th style="width: 6%;" scope="col" class="manage-column column-primary sortable desc">Quiz ID</th>
+                    <th style="width: 20%;" scope="col" class="manage-column column-primary sortable desc">Quiz Title</th>
+                    <th style="width: 10%;" scope="col" class="manage-column column-primary">Connected To</th>
+                    <th style="width: 12%;" scope="col" class="manage-column column-primary sortable desc">Number of Questions</th>
+                    <th style="width: 12%;" scope="col" class="manage-column column-primary sortable desc">Passing Percentage</th>
+                    <th style="width: 10%;" scope="col" class="manage-column column-primary">Author</th>
+                    <th style="width: 15%;" scope="col" class="manage-column column-primary sortable desc">Created At</th>
+                    <th style="width: 15%;" scope="col" class="manage-column column-primary sortable desc">Updated At</th>                
                 </tr>
             </thead>
             <tbody id="the-list">
@@ -103,7 +103,7 @@
                     <td><strong><a class="row-title" href="<?php echo $FB_URL['un'] . '&id=' . $row->id . '&action=edit'; ?>" title="Edit this item"><?php echo $row->title; ?></a></strong>
                         <div class="row-actions">
                             <span class="edit"><a href="<?php echo $FB_URL['un'] . '&id=' . $row->id . '&action=edit'; ?>" title="Edit this item">Edit</a> | </span>
-                            <span class="trash"><a href="<?php echo $FB_URL['ua'] . '&id[]=' . $row->id . '&action=trash'; ?>" class="fb_submitdelete" title="Move this item to the Trash" href="">Delete</a> | </span>
+                            <span class="trash"><a href="<?php echo $FB_URL['ua'] . '&id[]=' . $row->id . '&action=trash'; ?>" class="fb_submitdelete" title="Delete this item" href="">Delete</a> | </span>
                             <span class="view"><a href="<?php echo $FB_URL['quizzes'] . $row->id; ?>" title="View Quiz" rel="permalink">View</a></span>
                         </div>
                     </td>
@@ -137,30 +137,6 @@
     var ua = "<?php echo $FB_URL['ua']; ?>";
     var trash_url = ua + '&action=trash';    
     jQuery(document).ready(function($) {        
-        $( ".fb-data-table" ).DataTable({
-            "aoColumnDefs": [
-              { 'bSortable': false, 'aTargets': [ 0 ] }
-            ],
-            "order": [[ 1, "desc" ]],
-            "pageLength": 25,
-            
-            "searching": false,
-            "dom": 'rtlp',
-            buttons: [
-                'selectRows',
-                'selectColumns',
-                'selectCells'
-            ]
-        });
-        $(".fb-data-table-wrap .dataTables_paginate").append('<input type="button" id="fb_delete_selected" class="button" value="Delete Selected"/>');
-        
-        
-        $("#fb_from_date").datepicker({
-            dateFormat: 'yy-mm-dd'
-        });
-        $("#fb_to_date").datepicker({
-            dateFormat: 'yy-mm-dd'
-        });
         
         $("#fb_filter_button").click(function(e) {
             title = $("#fb_title").val();            

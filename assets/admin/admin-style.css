@@ -413,11 +413,11 @@ table.dataTable.no-footer {
     width: 100% !important;
     display: block;
 }
-.fb-wrap .dataTables_wrapper .dataTables_length {
+.fb-data-table-wrap .dataTables_wrapper .dataTables_length {
     float: right;
     margin-top: 10px;
 }
-.fb-wrap .dataTables_wrapper .dataTables_paginate {
+.fb-data-table-wrap .dataTables_wrapper .dataTables_paginate {
     float: none;
     text-align: center;
     margin-top: 10px;
@@ -426,7 +426,7 @@ table.dataTable.no-footer {
     float: left;
 }
 
-
+                        
 
 
 @media (max-width: 782px) {

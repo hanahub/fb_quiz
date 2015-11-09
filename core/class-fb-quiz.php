@@ -1,13 +1,17 @@
 <?php
 
 /**
- * FB_Question Class
+ * FB_Quiz Class
  *
- * The FB_Question class stores question data and categories as well as handling question related functionalities. 
+ * Handles all quiz related functionalities
  *
  */    
 class FB_Quiz {
     
+    /**
+    * Adds various ajax handlers for quiz actions    
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function __construct() {                                                    
         add_action( 'wp_ajax_fb_add_quiz', array( $this, 'add_quiz' ) );
         add_action( 'wp_ajax_fb_edit_quiz', array( $this, 'edit_quiz' ) );
@@ -18,7 +22,10 @@ class FB_Quiz {
         
     }
     
-    /* Display all questions page */
+    /**
+    * Displays all quizzes page
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     public function all_quizzes_page() {        
         ob_start();
         include( FBQUIZ_TEMPLATES_PATH . '/all-quizzes.php' );
@@ -26,7 +33,10 @@ class FB_Quiz {
         echo $html;
     }
     
-    /* Display new quiz page */
+    /**
+    * Displays new quiz page
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     public function new_quiz_page() {        
         ob_start();
         include( FBQUIZ_TEMPLATES_PATH . '/add-new-quiz.php' );
@@ -34,7 +44,10 @@ class FB_Quiz {
         echo $html;
     }
     
-    /* Returns 3 random questions in a specific category */
+    /**
+    * Returns 3 random questions in a specific category
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     function get_random_questions_by_category() {
         global $wpdb, $FB_TABLE, $FB_URL;
         $id = $_REQUEST['id'];
@@ -45,8 +58,10 @@ class FB_Quiz {
         die();
     }
     
-    
-    /* Add new quiz info */
+    /**
+    * Stores new quiz info into quiz table
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     function add_quiz() {
         global $wpdb, $FB_TABLE, $FB_URL;
         $p = $_REQUEST['params'];
@@ -77,7 +92,10 @@ class FB_Quiz {
         die();
     }
     
-    /* Edit existing quiz info */
+    /**
+    * Updates existing quiz info
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     function edit_quiz() {
         global $wpdb, $FB_TABLE, $FB_URL;
         
@@ -112,19 +130,28 @@ class FB_Quiz {
         die();
     }
     
-    /* Return quiz info as JSON */
+    /**
+    * Returns quiz info as JSON
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     public function get_quiz() {
         global $wpdb, $FB_TABLE;
         $id = $_REQUEST['qid'];
         
         $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['quizzes'] . " WHERE id=" . $id );
-        $result = $dumb[0];
+        $result = $dumb[0];        
+        $q_random_questions = $result->random_questions;
+        $q_random_choices = $result->random_choices;        
         
         $q_questions = unserialize($result->questions);
+        if ($q_random_questions == 1) shuffle($q_questions);
+        
         $questions = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE id IN (" . implode(", ", $q_questions) . ") ORDER BY FIELD(id, " . implode(", ", $q_questions) . ")" );        
         
         foreach ($questions as $q) {
             $q->choices = unserialize($q->choices);
+            
+            if ($q_random_choices == 1) shuffle($q->choices['choices']);
             unset($q->choices['correct']);
             $q->cats = unserialize($q->cats);
         }
@@ -134,15 +161,22 @@ class FB_Quiz {
         die();
     }
     
-    /* Delete a quiz by id */
+    /**
+    * Deletes a quiz from quiz table
+    * @param int quiz ID
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     public function delete_quiz($id) {
         global $wpdb, $FB_TABLE;
         
-        $wpdb->delete("{$FB_TABLE['quizzes']}", array('id' => $id));
         $wpdb->delete("{$FB_TABLE['quiz_relationships']}", array('quiz_id' => $id));        
+        $wpdb->delete("{$FB_TABLE['quizzes']}", array('id' => $id));
     }
     
-    /* Ajax call to remove a question in a quiz */
+    /**
+    * Ajax handler to remove a question in a quiz     
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     public function remove_relationship() {
         global $wpdb, $FB_TABLE;
         

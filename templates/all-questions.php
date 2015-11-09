@@ -1,39 +1,61 @@
 <?php
-    global $wpdb, $current_user, $FB_TABLE, $FB_URL;  
+    global $wpdb, $current_user, $FB_TABLE, $FB_URL, $quizzes;  
 
-    $title = $_REQUEST['title'];
-    $quiz_id = $_REQUEST['quiz_id'];
-    $num_choices = $_REQUEST['num_choices'];
-    $points = $_REQUEST['points'];
-    $author = $_REQUEST['author'];
-    $from_date = $_REQUEST['from_date'];
-    $to_date = $_REQUEST['to_date'];
+    $action = $_REQUEST['action'];
+    $fb_msg = "";
     
-    
-    $where = ' WHERE 1 ';
-    if (!empty($quiz_id)) {        
-        $where = " INNER JOIN {$FB_TABLE['quiz_relationships']} ON {$FB_TABLE['questions']}.id={$FB_TABLE['quiz_relationships']}.question_id {$where} AND {$FB_TABLE['quiz_relationships']}.quiz_id={$quiz_id}";
-    }
-    if (!empty($title)) {
-        $where = $where . ' AND title like "%' . $title . '%"';
-    }
-    if ($num_choices != '') {
-        $where = $where . " AND number_of_choices={$num_choices}";
-    }
-    if ($points != '') {
-        $where = $where . " AND points={$points}";
-    }
-    if (!empty($from_date)) {
-        $where = $where . " AND created_at>='{$from_date}'";
-    }
-    if (!empty($to_date)) {
-        $where = $where . " AND created_at<='{$to_date}'";
-    }    
+    if ($action == 'trash') {
+        $dumbs = $_REQUEST['id'];
+        foreach ($dumbs as $dumb) {
+            $quizzes->fb_question->delete_question($dumb);            
+        }
+                
+        if (count($dumbs) == 1)
+            $fb_msg = count($dumbs) . " quiz permanently deleted.";
+        else
+            $fb_msg = count($dumbs) . " quizzes permanently deleted.";
+            
+    } else {
+        $title = $_REQUEST['title'];
+        $quiz_id = $_REQUEST['quiz_id'];
+        $num_choices = $_REQUEST['num_choices'];
+        $points = $_REQUEST['points'];
+        $author = $_REQUEST['author'];
+        $from_date = $_REQUEST['from_date'];
+        $to_date = $_REQUEST['to_date'];
+        
+        
+        $where = ' WHERE 1 ';
+        if (!empty($quiz_id)) {        
+            $where = " INNER JOIN {$FB_TABLE['quiz_relationships']} ON {$FB_TABLE['questions']}.id={$FB_TABLE['quiz_relationships']}.question_id {$where} AND {$FB_TABLE['quiz_relationships']}.quiz_id={$quiz_id}";
+        }
+        if (!empty($title)) {
+            $where = $where . ' AND title like "%' . $title . '%"';
+        }
+        if ($num_choices != '') {
+            $where = $where . " AND number_of_choices={$num_choices}";
+        }
+        if ($points != '') {
+            $where = $where . " AND points={$points}";
+        }
+        if (!empty($from_date)) {
+            $where = $where . " AND created_at>='{$from_date}'";
+        }
+        if (!empty($to_date)) {
+            $where = $where . " AND created_at<='{$to_date}'";
+        } 
+    }   
     
 ?>
 
 <div class="wrap fb-wrap">
     <h1>All Questions <a href="<?php echo $FB_URL['qn']; ?>" class="page-title-action">Add New</a></h1>
+    <?php if ($fb_msg != '') : ?>
+    <div id="message" class="updated notice is-dismissible below-h2">
+        <p><?php echo $fb_msg; ?></p>
+        <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
+    </div>
+    <?php endif; ?>
     <div class="fb-filters">        
         <label class="fb-filter-label">Filter By: </label>
         <label style="width: 120px;"><i class="fb-icon icon-search"></i><input type="search" id="fb_title" placeholder="Title" value="<?php echo $title; ?>"></label>        
@@ -53,21 +75,22 @@
         <label style="width: 125px;"><i class="fb-icon icon-search"></i><input type="search" id="fb_from_date" placeholder="From Date" value="<?php echo $from_date; ?>"></label>
         <label style="width: 125px;"><i class="fb-icon icon-search"></i><input type="search" id="fb_to_date" placeholder="To Date" value="<?php echo $to_date; ?>"></label>
         <label style="width: 80px;"><input id="fb_filter_button" type="button" class="button" value="Filter"></label>        
+        <label style="width: 80px;"><a href="<?php echo $FB_URL['qa']; ?>" id="fb_reset_button" class="button">Reset</a></label>
     </div>
-    <div class="fb-data-table-wrap">
+    <div class="fb-data-table-wrap" id="questions-table-wrap">
         <table class="wp-list-table widefat fixed striped questions fb-data-table" id="questions-table">
             <thead>
                 <tr>
                     <td id="cb" class="manage-column column-cb check-column"><label class="screen-reader-text" for="cb-select-all-1">Select All</label><input id="cb-select-all-1" type="checkbox"></td>
-                    <th scope="col" id="column-question-id" class="manage-column column-primary sortable desc">Question ID</th>
-                    <th scope="col" id="column-question-title" class="manage-column column-primary sortable desc">Question Title</th>
-                    <th scope="col" id="column-connected-to" class="manage-column column-primary">Connected To</th>
-                    <th scope="col" id="column-number-of-choices" class="manage-column column-primary sortable desc">Number of Choices</th>
-                    <th scope="col" id="column-points" class="manage-column column-primary sortable desc">Points</th>
-                    <th scope="col" id="column-author-name" class="manage-column column-primary">Author Name</th>
-                    <th scope="col" id="column-created-at" class="manage-column column-primary sortable desc">Created At</th>
-                    <th scope="col" id="column-updated-at" class="manage-column column-primary sortable desc">Updated At</th>
-                    <th scope="col" id="column-categories" class="manage-column column-primary">Categories</th>
+                    <th style="width: 10%;" scope="col" id="column-question-id" class="manage-column column-primary sortable desc">Question ID</th>
+                    <th style="width: 20%;" scope="col" id="column-question-title" class="manage-column column-primary sortable desc">Question Title</th>
+                    <th style="width: 10%;" scope="col" id="column-connected-to" class="manage-column column-primary sortable">Connected To</th>
+                    <th style="width: 10%;" scope="col" id="column-number-of-choices" class="manage-column column-primary sortable desc">Number of Choices</th>
+                    <th style="width: 10%;" scope="col" id="column-points" class="manage-column column-primary sortable desc">Points</th>
+                    <th style="width: 10%;" scope="col" id="column-author-name" class="manage-column column-primary sortable">Author Name</th>
+                    <th style="width: 10%;" scope="col" id="column-created-at" class="manage-column column-primary sortable desc">Created At</th>
+                    <th style="width: 10%;" scope="col" id="column-updated-at" class="manage-column column-primary sortable desc">Updated At</th>
+                    <th style="width: 10%;" scope="col" id="column-categories" class="manage-column column-primary sortable">Categories</th>
                 </tr>
             </thead>
             <tbody id="the-list">
@@ -99,7 +122,12 @@
                         <div class="locked-indicator"></div>
                     </th>
                     <td><?php echo $row->id; ?></td>
-                    <td><strong><a class="row-title" href="<?php echo $FB_URL['qn'] . '&id=' . $row->id . '&action=edit'; ?>" title="Edit"><?php echo $row->title; ?></a></strong></td>
+                    <td><strong><a class="row-title" href="<?php echo $FB_URL['qn'] . '&id=' . $row->id . '&action=edit'; ?>" title="Edit"><?php echo $row->title; ?></a></strong>
+                        <div class="row-actions">
+                            <span class="edit"><a href="<?php echo $FB_URL['qn'] . '&id=' . $row->id . '&action=edit'; ?>" title="Edit this item">Edit</a> | </span>
+                            <span class="trash"><a href="<?php echo $FB_URL['qa'] . '&id[]=' . $row->id . '&action=trash'; ?>" class="fb_submitdelete" title="Delete this item" href="">Delete</a></span>
+                        </div>
+                    </td>
                     <td>
                     <?php
                         global $quizzes;
@@ -122,25 +150,8 @@
 </div>
 <script>
     var qa = "<?php echo $FB_URL['qa']; ?>";
-    var trash_url = ua + '&action=trash';
+    var trash_url = qa + '&action=trash';
     jQuery(document).ready(function($) {
-        
-        $( "#questions-table" ).DataTable({
-            "aoColumnDefs": [
-              { 'bSortable': false, 'aTargets': [ 0 ] }
-            ],
-            "order": [[ 1, "desc" ]],
-            "pageLength": 25,
-            "lengthChange": false,
-            "searching": false
-        });
-        
-        $("#fb_from_date").datepicker({
-            dateFormat: 'yy-mm-dd'
-        });
-        $("#fb_to_date").datepicker({
-            dateFormat: 'yy-mm-dd'
-        });
         
         $("#fb_filter_button").click(function(e) {
             title = $("#fb_title").val();

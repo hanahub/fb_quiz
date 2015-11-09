@@ -104,12 +104,14 @@
                         </div>
                         <?php endif; ?>
                     </div>
+                    <?php if ($o['explanation'] != '') : ?>
                     <div class="fb_explanation">
                         <fieldset>
                             <legend>Correct Answer Explanation</legend>
                             <p><?php echo $o['explanation']; ?></p>
                         </fieldset>
                     </div>
+                    <?php endif; ?>
                     
                 </div>
             </div>

@@ -17,6 +17,10 @@ class FB_Quizzes {
     public $fb_question = null;
     public $fb_quiz = null;
     
+    /**
+    * Registers activation/deactivation hook, adds various actions and filters used in Quizzes class
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     public function __construct() { 
         register_activation_hook( __FILE__, array( $this, 'plugin_activation' ) );
         register_deactivation_hook( __FILE__, array( $this, 'plugin_deactivation' ) );
@@ -44,6 +48,10 @@ class FB_Quizzes {
         add_filter( 'the_title', array( $this, "the_title" ) );
     }
     
+    /**
+    * Registers and enqueues stylesheet files used for front-end
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function register_styles() {        
         wp_register_style( 'fb-quizzes-style', FBQUIZ_URL . 'assets/front-end/style.css' );
         wp_enqueue_style( 'fb-quizzes-style' );
@@ -52,6 +60,10 @@ class FB_Quizzes {
         wp_enqueue_style( 'fb-global-style' );     
     }     
     
+    /**
+    * Registers and enqueues script files used for front-end
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function register_scripts() {
         wp_register_script( 'fb-global-script', FBQUIZ_URL . 'assets/global.js');
         wp_enqueue_script( 'fb-global-script' );
@@ -70,6 +82,10 @@ class FB_Quizzes {
         
     }    
     
+    /**
+    * Registers and enqueues stylesheet files used for dashboard
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function register_plugin_styles() {         
         wp_register_style( 'fb-datatables-style', FBQUIZ_URL . 'assets/jquery-datatables/jquery.dataTables.min.css' );
         wp_enqueue_style( 'fb-datatables-style' );
@@ -81,6 +97,10 @@ class FB_Quizzes {
         wp_enqueue_style( 'fb-global-style' );      
     }     
     
+    /**
+    * Registers and enqueues script files used for dashboard
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function register_plugin_scripts() {                    
         wp_register_script( 'fb-global-script', FBQUIZ_URL . 'assets/global.js');
         wp_enqueue_script( 'fb-global-script' );
@@ -97,6 +117,10 @@ class FB_Quizzes {
         wp_enqueue_script( 'fb-quizzes-script', FBQUIZ_URL . 'assets/admin/admin-script.js', array('jquery', 'jquery-ui-sortable'), '1.0.0', true );        
     }
     
+    /**
+    * Runs when the plugin is activated and creates quizzes, results and my-quizzes pages for front-end
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function plugin_activation() {
         
         global $user_ID;
@@ -130,15 +154,31 @@ class FB_Quizzes {
         if (!get_page_by_path("quizzes")) $pageid = wp_insert_post($quizzes);        
     }
     
+    /**
+    * Runs when the plugin is deactivated
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function plugin_deactivation() {
         
     }
     
+    /**
+    * Adds plugin specific page ID to query variables and returns modified query variables
+    * @params array
+    * @return array
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function query_vars( $query_vars ) {                
         $query_vars[] = 'fb_id';    
         return $query_vars;
     }    
     
+    /**
+    * Adds single-quiz class if the current page is quiz, single-result class if result page in body tag
+    * @params array
+    * @return array
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function body_class( $classes ) {        
         if ($this->is_quiz())
             $classes[] = 'single-quiz';
@@ -148,6 +188,10 @@ class FB_Quizzes {
         return $classes;
     }
     
+    /**
+    * Declares and prints ajax url, site url as Javascript variables    
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function ajaxurl() {
     ?>
         <script type="text/javascript">
@@ -157,6 +201,10 @@ class FB_Quizzes {
     <?php
     }
     
+    /**
+    * Adds rewrite rules and includes classes required    
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function init() {        
     
         require_once( FBQUIZ_PATH . 'core/globals.php' );
@@ -184,6 +232,10 @@ class FB_Quizzes {
             'top' );            
     }    
     
+    /**
+    * Adds Quiz menus in dashboard    
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function admin_menu() {   
         
         add_menu_page( 'FB Quizzes', 'FB Quizzes', 'manage_options', 'quizzes_manager', 'my_custom_menu_page', 'dashicons-admin-post', 3 );     
@@ -197,6 +249,11 @@ class FB_Quizzes {
         remove_submenu_page('quizzes_manager', 'quizzes_manager');
     }
     
+    /**
+    * Check if current page is quiz    
+    * @return int quiz page ID|0
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     public function is_quiz() {
         global $wp_query;                         
         $name = $wp_query->get('name');
@@ -210,6 +267,11 @@ class FB_Quizzes {
         return 0;
     }    
     
+    /**
+    * Check if current page is result    
+    * @return int result page ID|0
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     public function is_result() {
         global $wp_query;                         
         $name = $wp_query->get('name');
@@ -223,6 +285,11 @@ class FB_Quizzes {
         return 0;
     }    
     
+    /**
+    * Modifies the content for quiz, result and my-quiz pages
+    * @return string page content
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function the_content($content) {
         global $wp_query;
         if ( is_page( 'quizzes' ) ) {        
@@ -241,6 +308,12 @@ class FB_Quizzes {
         return $content;
     }
     
+    /**
+    * Hides titles for quiz, result, my-quiz pages    
+    * @param string title
+    * @return string title|''
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     function the_title($title) {        
         if (in_the_loop() && is_page(array("quizzes", "results", "my-quizzes"))) {
             return "";
@@ -249,7 +322,12 @@ class FB_Quizzes {
         }   
     }
     
-    /* Display Quiz page on front-end */
+    /**
+    * Displays Quiz page in front-end    
+    * @param int quiz_id
+    * @return string quiz page content
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     public function quizzes_page($quiz_id) {
         global $wpdb, $FB_TABLE;
         ob_start();
@@ -259,7 +337,13 @@ class FB_Quizzes {
         return $html;
     }
     
-    /* Display Result page on front-end */
+    /**
+    * Displays Result page in front-end    
+    * @param int result_id
+    * @return string result page content
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
+    
     public function result_page($result_id) {
         ob_start();
         include( FBQUIZ_TEMPLATES_PATH . '/result.php' );
@@ -267,7 +351,12 @@ class FB_Quizzes {
         return $html;
     }
     
-    /* Display My Quizzes page on front-end */
+    /**
+    * Displays My Quiz page in front-end    
+    * @param int quiz_id
+    * @return string my quiz page content
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     public function my_quizzes_page($quiz_id) {
         ob_start();
         if (!empty($quiz_id) && is_numeric($quiz_id)) {
@@ -280,7 +369,11 @@ class FB_Quizzes {
         return $html;
     }
     
-    /* Render Reporting page on dashboard */
+    /**
+    * Renders Reporting page in dashboard        
+    * @return string reporting page content
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     public function render_reporting_page() {
         ob_start();
         $quiz_id = $_REQUEST['quiz']; 
@@ -294,27 +387,47 @@ class FB_Quizzes {
         echo $html;
     }
     
-    /* Render Quizzes list page on dashboard */
+    /**
+    * Renders Quizzes list page in dashboard        
+    * @return string Quizzes list page content
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     function render_all_quizzes_page() {
         $this->fb_quiz->all_quizzes_page();
     }
     
-    /* Render New Quiz page */
+    /**
+    * Renders New Quiz page in dashboard        
+    * @return string New Quiz page content
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     function render_new_quiz_page() {
         $this->fb_quiz->new_quiz_page();
     }
     
-    /* Render All Questions page */
+    /**
+    * Renders Questions list page in dashboard        
+    * @return string Questions list page content
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */        
     function render_all_questions_page() {
         $this->fb_question->all_questions_page();
     }
     
-    /* Render New/Edit Question page */
+    /**
+    * Renders New/Edit Question page in dashboard        
+    * @return string New/Edit question page content
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */            
     function render_new_question_page() {
         $this->fb_question->new_question_page();
     }
     
-    /* Save new answer into answers table */
+    /**
+    * Saves new answer into answers table        
+    * @return array status and new inserted ID
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
     function add_answer() {
         global $wpdb, $FB_TABLE, $FB_URL;
         $p = $_REQUEST['params'];
@@ -334,6 +447,12 @@ class FB_Quizzes {
         die();
     }
     
+    /**
+    * Searches for choice name by choice ID
+    * @param array choices, int choice ID
+    * @return string choice name
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     public function findChoiceName($arr, $value) {
         foreach ($arr as $a) {
             if ($a[0] == $value) return $a[1];
@@ -341,6 +460,12 @@ class FB_Quizzes {
         return ' - ';
     }
     
+    /**
+    * Returns total attempts for a specific quiz by student ID
+    * @param int quiz ID, int student ID
+    * @return int total attempts
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     public function getTotalAttempts($quiz_id, $student_id = null) {
         global $wpdb, $FB_TABLE;
         
@@ -353,18 +478,36 @@ class FB_Quizzes {
         return $wpdb->num_rows;
     }
     
+    /**
+    * Returns last score for a specific quiz by student ID
+    * @param int quiz ID, int student ID
+    * @return int score
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     public function getLastScore($quiz_id, $student_id) {
         global $wpdb, $FB_TABLE;        
         $dumb = $wpdb->get_results("SELECT score, result FROM " . $FB_TABLE['answers'] . " WHERE student_id={$student_id} AND quiz_id={$quiz_id} ORDER BY id DESC");                        
         return $dumb[0]->score;
     }
     
+    /**
+    * Returns highest score for a specific quiz by student ID
+    * @param int quiz ID, int student ID
+    * @return int score
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     public function getHighestScore($quiz_id, $student_id) {
         global $wpdb, $FB_TABLE;        
         $dumb = $wpdb->get_results("SELECT max(score) as score, result FROM " . $FB_TABLE['answers'] . " WHERE student_id={$student_id} AND quiz_id={$quiz_id}");
         return $dumb[0]->score;
     }   
     
+    /**
+    * Returns average score for a specific quiz
+    * @param int quiz ID
+    * @return int score
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
     public function getAverageScore($quiz_id) {
         global $wpdb, $FB_TABLE;
         $dumb = $wpdb->get_results("SELECT AVG(score) as result FROM " . $FB_TABLE['answers'] . " WHERE quiz_id={$quiz_id}");
@@ -374,28 +517,3 @@ class FB_Quizzes {
 }
 
 $quizzes = new FB_Quizzes();
-
-
-//add_action( 'template_redirect', 'my_plugin_template_redirect_intercept' );
-function my_plugin_template_redirect_intercept() {
-    global $wp_query;    
-    $name = $wp_query->get('name');
-    $id = $wp_query->get('page');
-    if ($name == "quizzes") {
-        if (is_int($id)) {
-            echo "XXXXXXXXXX22222222222"; exit();
-        }
-    }
-}
-
-
-
-//add_filter( 'page_template', 'wpa3396_page_template', 130 );
-function wpa3396_page_template( $page_template )
-{
-    global $wp_query; echo $wp_query->get("quiz_id");
-    if ( is_page( 'quiz' ) ) {
-        $page_template = dirname( FILE ) . '/custom-page-template.php';
-    }
-    return $page_template;
-}

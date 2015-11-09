@@ -118,12 +118,12 @@ class FB_Quizzes {
     }
     
     /**
-    * Runs when the plugin is activated and creates quizzes, results and my-quizzes pages for front-end
+    * Runs when the plugin is activated and creates quizzes, results and my-quizzes pages for front-end, and plugin specific tables
     * @author Valentin Marinov <dev.valentin2013@gmail.com>
     */
     function plugin_activation() {
         
-        global $user_ID;
+        global $user_ID, $wpdb, $FB_TABLE;
         
         $my_quizzes['post_type']    = 'page';
         $my_quizzes['post_name']    = 'my-quizzes';
@@ -151,7 +151,103 @@ class FB_Quizzes {
         
         if (!get_page_by_path("my-quizzes")) $pageid = wp_insert_post($my_quizzes);
         if (!get_page_by_path("results")) $pageid = wp_insert_post($results);
-        if (!get_page_by_path("quizzes")) $pageid = wp_insert_post($quizzes);        
+        if (!get_page_by_path("quizzes")) $pageid = wp_insert_post($quizzes);
+        
+        
+        $table_name = $FB_TABLE['questions_cat'];
+        if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+            
+            $sql = "CREATE TABLE IF NOT EXISTS `fb_questions_cat` (
+                      `id` smallint(6) NOT NULL AUTO_INCREMENT,
+                      `name` varchar(100) NOT NULL,
+                      `parent` smallint(6) NOT NULL DEFAULT '0',
+                      PRIMARY KEY (`id`),
+                      UNIQUE KEY `id` (`id`)
+                    ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=23 ;";
+            
+            require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+            dbDelta( $sql );
+            
+        }
+        
+        $table_name = $FB_TABLE['questions'];
+        if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+            $sql = "CREATE TABLE IF NOT EXISTS `fb_questions` (
+                      `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                      `author` bigint(20) NOT NULL,
+                      `title` longtext NOT NULL,
+                      `created_at` datetime NOT NULL,
+                      `updated_at` datetime NOT NULL,
+                      `type` enum('single','multiple','sorting') NOT NULL DEFAULT 'single',
+                      `points` int(5) NOT NULL,
+                      `cats` varchar(255) DEFAULT NULL,
+                      `correct_explanation` longtext,
+                      `connected_to` varchar(255) DEFAULT NULL,
+                      `status` enum('publish','draft') NOT NULL DEFAULT 'draft',
+                      `choices` longtext,
+                      `number_of_choices` int(11) NOT NULL DEFAULT '0',
+                      PRIMARY KEY (`id`)
+                    ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=24 ;";
+            
+            require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+            dbDelta( $sql );
+        }
+        
+        $table_name = $FB_TABLE['quizzes'];
+        if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+            $sql = "CREATE TABLE IF NOT EXISTS `fb_quizzes` (
+                      `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                      `author` bigint(20) NOT NULL,
+                      `title` varchar(255) NOT NULL,
+                      `description` longtext NOT NULL,
+                      `num_of_questions` int(5) NOT NULL,
+                      `questions` varchar(500) NOT NULL,
+                      `connected_to` varchar(255) NOT NULL,
+                      `passing_percentage` tinyint(3) NOT NULL,
+                      `layout` enum('single','multiple') NOT NULL,
+                      `status` enum('publish','draft') NOT NULL,
+                      `created_at` datetime NOT NULL,
+                      `updated_at` datetime NOT NULL,
+                      `allow_skipping` tinyint(1) NOT NULL DEFAULT '0',
+                      `immediate_feedback` tinyint(1) NOT NULL DEFAULT '0',
+                      `random_questions` tinyint(1) NOT NULL DEFAULT '0',
+                      `random_choices` tinyint(1) NOT NULL DEFAULT '0',
+                      PRIMARY KEY (`id`)
+                    ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;";
+            
+            require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+            dbDelta( $sql );
+        }
+        
+        $table_name = $FB_TABLE['answers'];
+        if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+            $sql = "CREATE TABLE IF NOT EXISTS `fb_answers` (
+                      `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                      `quiz_id` bigint(20) NOT NULL,
+                      `student_id` int(10) NOT NULL,
+                      `answers` longtext NOT NULL,
+                      `created_at` datetime NOT NULL,
+                      `score` double NOT NULL,
+                      `result` varchar(10) NOT NULL,
+                      PRIMARY KEY (`id`)
+                    ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=42 ;";
+            
+            require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+            dbDelta( $sql );
+        }
+        
+        $table_name = $FB_TABLE['quiz_relationships'];
+        if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+            $sql = "CREATE TABLE IF NOT EXISTS `fb_quiz_relationships` (
+                      `id` int(11) NOT NULL AUTO_INCREMENT,
+                      `quiz_id` int(11) NOT NULL,
+                      `question_id` int(11) NOT NULL,
+                      PRIMARY KEY (`id`)
+                    ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=19 ;";
+            
+            require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+            dbDelta( $sql );
+        }
     }
     
     /**

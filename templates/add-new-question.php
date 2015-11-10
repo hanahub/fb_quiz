@@ -1,6 +1,6 @@
 <?php
     global $wpdb, $FB_TABLE, $current_user;
-    sssssss
+    
     $id = $_REQUEST['id'];
     $action = $_REQUEST['action'];
     $edit_mode = 0;

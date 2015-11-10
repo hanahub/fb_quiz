@@ -1,11 +1,11 @@
 <?php
 
-/* Test
+/*
    Plugin Name: FB Quizzes
    Description: FB Quizzes
    Author: Valentin Marinov
 */
-
+aaaaaaaaa
 define( 'FBQUIZ_PATH', plugin_dir_path( __FILE__ ) );
 define( 'FBQUIZ_URL', trailingslashit( plugins_url( '/', __FILE__ ) ) );
 define( 'FBQUIZ_TEMPLATES_PATH', FBQUIZ_PATH . 'templates' );

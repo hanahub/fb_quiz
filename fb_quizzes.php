@@ -1,6 +1,6 @@
 <?php
 
-/*
+/* Test
    Plugin Name: FB Quizzes
    Description: FB Quizzes
    Author: Valentin Marinov

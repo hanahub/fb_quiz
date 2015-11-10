@@ -11,7 +11,7 @@ define( 'FBQUIZ_URL', trailingslashit( plugins_url( '/', __FILE__ ) ) );
 define( 'FBQUIZ_TEMPLATES_PATH', FBQUIZ_PATH . 'templates' );
 
 
-
+wwwwww
 class FB_Quizzes {
  
     public $fb_question = null;

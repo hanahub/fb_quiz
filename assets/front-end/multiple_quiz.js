@@ -6,6 +6,7 @@ angular.module('MultipleQuizModule', [])
         }
     };
     
+    
     var result = [];
     
     $scope.questionNum = 1;    

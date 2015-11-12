@@ -1,15 +1,17 @@
 <?php
     global $user_ID;
-    $student_id = $user_ID;
+    $student_id = $user_ID;    
+        
 ?>
 
-<div class="fb_wrap {{ layout }}" ng-app="MultipleQuizModule" ng-controller="MultipleQuizController">    
+<div class="fb_wrap multiple" ng-app="MultipleQuizModule" ng-controller="MultipleQuizController">    
     <h3 class="fb_quiz_title">{{ quizTitle }}</h3>
     <p ng-bind-html="description | trustAsHtml" class="fb_quiz_description"></p>
     
     <div class="fb_quiz_content">        
         <div class="fb_quiz_left">
-            <a ng-click="changeQuestion($index)" class="fb_quiz_nav" ng-class="{'fb_active': questionNum == $index + 1}" ng-repeat="question in questions track by $index">{{$index + 1}}</a>
+            <a ng-if="allowSkip == 1" ng-click="changeQuestion($index)" class="fb_quiz_nav" ng-class="{'fb_noskip': allowSkip == 0, 'fb_active': questionNum == $index + 1}" ng-repeat="question in questions track by $index">{{$index + 1}}</a>
+            <a ng-if="allowSkip == 0" class="fb_quiz_nav" ng-class="{'fb_noskip': allowSkip == 0, 'fb_active': questionNum == $index + 1}" ng-repeat="question in questions track by $index">{{$index + 1}}</a>
         </div>
         <div class="fb_quiz_right">
             <div class="fb_row fb_question">
@@ -22,12 +24,20 @@
                 </ul>
                 <ul data-id="{{ question['id'] }}" data-type="{{ question['type'] }}" class="fb_question_content {{ question['type'] }}" ng-if="question['type'] != 'sorting'">
                     <li order-no="{{ $index }}" data-id="{{ choice[0] }}" ng-repeat="choice in question['choices']['choices'] track by $index">
-                        <div class="fb_choice_wrapper" ng-if="question['type'] == 'multiple'"><input ng-click="answerClicked()" type="checkbox" name="fb_question_{{ $index }}" id="fb_choice_{{ $index }}"/></div>                        
-                        <div class="fb_choice_wrapper" ng-if="question['type'] == 'single'"><input ng-click="answerClicked()" type="radio" name="fb_question_{{ $index }}" id="fb_choice_{{ $index }}"/></div>                        
+                        <div class="fb_choice_wrapper" ng-if="question['type'] == 'multiple'">
+                            <input ng-checked="initCheck(choice[0])" ng-click="answerClicked()" type="checkbox" name="fb_question_{{ $index }}" id="fb_choice_{{ $index }}"/>
+                        </div>                        
+                        <div class="fb_choice_wrapper" ng-if="question['type'] == 'single'">
+                            <input ng-checked="initCheck(choice[0])" ng-click="answerClicked()" type="radio" name="fb_question[]" id="fb_choice_{{ $index }}"/>
+                        </div>                        
                         <label for="fb_choice_{{ $index }}">{{ choice[1] }}</label>
                     </li>
                 </ul>
             </div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="fb-row" ng-if="allowSkip == 0 && questionNum < quiz['questions'].length">
+            <input type="button" id="fb_next_question" value="Next" ng-click="nextQuestion()"/>
         </div>
     </div>
     

@@ -126,6 +126,13 @@ ul.fb_question_content li > label {
     margin-bottom: 10px;
     border: 1px solid #37a000 !important;
 }
+.fb_wrap .fb_noskip {
+    cursor: default !important;
+}
+.fb_wrap .fb_noskip:not(.fb_active):hover {
+    background: inherit;
+    color: inherit;    
+}
 .fb_wrap .fb_quiz_nav:hover, .fb_wrap .fb_quiz_nav.fb_active {
     color: #fff;
     background: #37a000;
@@ -155,4 +162,10 @@ ul.fb_question_content li > label {
 }
 table th {
     vertical-align: middle;
+}
+.fb_quiz_footer {
+    text-align: right;
+}
+.fb_none_selected {
+    padding-left: 8px;
 }

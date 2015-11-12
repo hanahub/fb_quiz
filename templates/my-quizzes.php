@@ -2,7 +2,7 @@
 
     global $wpdb, $FB_TABLE, $FB_URL, $user_ID, $quizzes;
 
-    $rows = $wpdb->get_results("SELECT q.id as qid, q.title as title, count(a.quiz_id) as attempts, a.id as aid FROM " . $FB_TABLE['quizzes'] . 
+    $rows = $wpdb->get_results("SELECT q.id as qid, q.title as title, count(a.quiz_id) as attempts, a.id as aid, q.passing_percentage as passing_percentage FROM " . $FB_TABLE['quizzes'] . 
             " as q INNER JOIN " . $FB_TABLE['answers'] . " as a ON a.quiz_id=q.id WHERE a.student_id=" . $user_ID . " GROUP BY a.quiz_id" );              
             
           
@@ -29,6 +29,20 @@
                 $last_score = $quizzes->getLastScore($row->qid, $user_ID);
                 $highest_score = $quizzes->getHighestScore($row->qid, $user_ID);
                 
+                $passing_percentage = $row->passing_percentage;
+                if (isset($last_score)) {
+                    if ($last_score >= $passing_percentage)
+                        $last_score = $last_score . '%(Passed)';
+                    else
+                        $last_score = $last_score . '%(Failed)';
+                }
+                
+                if (isset($highest_score)) {
+                    if ($highest_score >= $passing_percentage)
+                        $highest_score = $highest_score . '%(Passed)';    
+                    else
+                        $highest_score = $highest_score . '%(Failed)';    
+                }
                 /*<td><a class="fb_link" href="' . $FB_URL['my-quizzes'] . $row->qid . '">' . $row->title . '</a></td>*/
                 echo '
                     <tr>

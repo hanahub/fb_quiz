@@ -148,12 +148,23 @@ class FB_Quiz {
         
         $questions = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE id IN (" . implode(", ", $q_questions) . ") ORDER BY FIELD(id, " . implode(", ", $q_questions) . ")" );        
         
-        foreach ($questions as $q) {
-            $q->choices = unserialize($q->choices);
+        $i = 0;
+        for ($i = 0; $i < count($questions); $i ++) {        
+            $questions[$i]->choices = unserialize($questions[$i]->choices);            
+            unset($questions[$i]->choices['correct']);
             
-            if ($q_random_choices == 1) shuffle($q->choices['choices']);
-            unset($q->choices['correct']);
-            $q->cats = unserialize($q->cats);
+            if ($questions[$i]->type == 'sorting') {                                
+                $q_choices = $questions[$i]->choices;                                   
+                while ($q_choices['choices'] == $questions[$i]->choices['choices']) {
+                    shuffle($questions[$i]->choices['choices']);                        
+                }
+                
+            } else {
+                if ($q_random_choices == 1) shuffle($questions[$i]->choices['choices']);
+            }
+            
+            $questions[$i]->cats = unserialize($questions[$i]->cats);
+            
         }
         $result->questions = $questions;
         

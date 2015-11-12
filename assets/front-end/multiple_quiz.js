@@ -9,39 +9,37 @@ angular.module('MultipleQuizModule', [])
     var result = [];
     
     $scope.questionNum = 1;    
+    $scope.allowSkip = 0;
     
     function init() {      
-        var url = ajaxurl + '?action=fb_get_quiz&qid=' + $scope.quiz_id;
+        var url = ajaxurl + '?action=fb_get_quiz&qid=' + $scope.quiz_id;        
         
         fb_block(".fb_wrap");
         $http.get(url, config).success(function(response) {
             $scope.quiz = response['result'];            
             
-            $scope.questionId = $scope.quiz['questions'][$scope.questionNum - 1]['id'];
-            url = ajaxurl + '?action=fb_get_question&qid=' + $scope.questionId;
-            $http.get(url, config).success(function(response) {
-                $scope.quizTitle = $scope.quiz['title'] + ' (Passing ' + $scope.quiz['passing_percentage'] + '%)';        
-                $scope.question = response['result'];
-                $scope.quesionTitle = $scope.questionNum + '. ' + $scope.question['title'] + ' (' + $scope.question['points'] + ' points)';
-                $scope.questions = $scope.quiz['questions'];
-                $scope.layout = $scope.quiz['layout'];
+            $scope.questions = $scope.quiz['questions'];
+            $scope.question = $scope.questions[$scope.questionNum - 1];
+            $scope.quizTitle = $scope.quiz['title'] + ' (Passing ' + $scope.quiz['passing_percentage'] + '%)';        
+            $scope.quesionTitle = $scope.questionNum + '. ' + $scope.question['title'] + ' (' + $scope.question['points'] + ' points)';
+            $scope.layout = $scope.quiz['layout'];
+            $scope.allowSkip = $scope.quiz['allow_skipping'];                
+            
+            for (i = 0; i < $scope.questions.length; i++) {
+                var answers = [];
+                answers[0] = [];
+                answers[1] = $scope.questions[i].choices['choices'].map(function(value, index) {
+                    return value[0];
+                });
                 
-                for (i = 0; i < $scope.questions.length; i++) {
-                    var answers = [];
-                    answers[0] = [];
-                    answers[1] = $scope.questions[i].choices['choices'].map(function(value, index) {
-                        return value[0];
-                    });
-                    
-                    result.push({'qid' : $scope.questions[i].id, 'answers' : answers});
-                }
-                
-                handleSortableQuestion();                    
-                
+                result.push({'qid' : $scope.questions[i].id, 'answers' : answers});
+            }
+            
+            handleSortableQuestion();
+            
+            $timeout(function () {
                 fb_unblock(".fb_wrap");
-            }).error(function(data, status, headers, config) {
-                fb_error();
-            });    
+            }, 200);  
             
         }).error(function(data, status, headers, config) {
             fb_error();
@@ -59,8 +57,7 @@ angular.module('MultipleQuizModule', [])
                         sorting_answer.push(choice_id);
                     });
                     
-                    result[$scope.questionNum - 1].answers[0] = sorting_answer;
-                    
+                    result[$scope.questionNum - 1].answers[0] = sorting_answer;                    
                 },
                 update: function(event, ui) {
                     var choices = jQuery(this).children("li");
@@ -71,6 +68,16 @@ angular.module('MultipleQuizModule', [])
                     });
                     
                     result[$scope.questionNum - 1].answers[0] = sorting_answer;
+                    var question_updated = [];
+                    for (i = 0; i < sorting_answer.length; i++) {
+                        for (j = 0; j < $scope.questions[$scope.questionNum - 1].choices['choices'].length; j++) {
+                            if (sorting_answer[i] == $scope.questions[$scope.questionNum - 1].choices['choices'][j][0])
+                                question_updated.push($scope.questions[$scope.questionNum - 1].choices['choices'][j]);
+                        }    
+                    }
+                    
+                    $scope.questions[$scope.questionNum - 1].choices['choices'] = question_updated;
+                    
                 }
             });
         });
@@ -81,8 +88,19 @@ angular.module('MultipleQuizModule', [])
     });
     
     $scope.changeQuestion = function (n) {
+        if ($scope.allowSkip == 0) return;
         $scope.questionNum = n + 1;
         $scope.question = $scope.quiz['questions'][n];
+        $scope.quesionTitle = $scope.questionNum + '. ' + $scope.question['title'] + ' (' + $scope.question['points'] + ' points)';
+        
+        handleSortableQuestion();        
+        $scope.answer = result[n].answers[0];
+    }
+    
+    $scope.nextQuestion = function () {
+        if ( $scope.questionNum == $scope.quiz['questions'].length ) return;
+        $scope.question = $scope.quiz['questions'][$scope.questionNum];
+        $scope.questionNum ++;
         $scope.quesionTitle = $scope.questionNum + '. ' + $scope.question['title'] + ' (' + $scope.question['points'] + ' points)';
         
         handleSortableQuestion();                    
@@ -99,6 +117,14 @@ angular.module('MultipleQuizModule', [])
         });
         
         result[$scope.questionNum - 1].answers[0] = answer;
+    }
+    
+    $scope.initCheck = function(id) {
+        if (typeof $scope.answer == 'undefined') return '';
+        for (i = 0; i < $scope.answer.length; i++) {
+            if ($scope.answer[i] == id) return "checked";
+        }
+        return '';
     }
     
     $scope.submitAnswers = function () {

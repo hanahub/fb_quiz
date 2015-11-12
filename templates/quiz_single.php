@@ -46,8 +46,12 @@
                 
                 $j = 1;
                 if ($q_random_choices == 1) shuffle($choices['choices']);
-                if ($q->type == 'sorting') {                    
-                    shuffle($choices['choices']);                    
+                if ($q->type == 'sorting') {
+                    
+                    $q_choices = unserialize($q->choices);                    
+                    while ($choices['choices'] == $q_choices['choices']) {                        
+                        shuffle($choices['choices']);                        
+                    }
                     foreach ($choices['choices'] as $choice) {
                         
                         $choice_id = "fb_choice_{$i}_{$j}";

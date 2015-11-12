@@ -13,7 +13,7 @@
     $a_data = $dumb[0];
     $a_answers = unserialize($a_data->answers);
     $quiz_id = $a_data->quiz_id;
-    
+    //print_r($a_answers);
     $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['quizzes'] . " WHERE id=" . $quiz_id );
     $q_data = $dumb[0];
     
@@ -31,6 +31,12 @@
         
         $student_answer = $answer['answers'][0];
         $correct = 'Wrong';
+        
+        if ($q->type == "multiple") {
+            if (is_array($student_answer)) sort($student_answer);
+            if (is_array($choices['correct'])) sort($choices['correct']);            
+        }
+        
         if ( $student_answer == $choices['correct'] ) {
             $correct = 'Correct';
             $correct_count ++;
@@ -44,8 +50,10 @@
         
         $student_choices = array();
         $correct_choices = array();        
-        foreach ($student_answer as $ch) {
-            $student_choices[] = $quizzes->findChoiceName($choices['choices'], $ch);
+        if (count($student_answer) > 0) {
+            foreach ($student_answer as $ch) {
+                $student_choices[] = $quizzes->findChoiceName($choices['choices'], $ch);
+            }
         }
         foreach ($choices['correct'] as $ch) {
             $correct_choices[] = $quizzes->findChoiceName($choices['choices'], $ch);
@@ -95,7 +103,11 @@
                     <div class="fb_answers">
                         <div class="fb_student_answers">
                             <label>- Student Answers</label>
-                            <ul><li><?php echo implode('</li><li>', $o['student_choices']); ?></li></ul>
+                            <?php if (count($o['student_choices']) > 0) :?>
+                                <ul><li><?php echo implode('</li><li>', $o['student_choices']); ?></li></ul>
+                            <?php else : ?>
+                                <p class="fb_none_selected">None</p>
+                            <?php endif; ?>                            
                         </div>
                         <?php if ($o['correct'] != 'Correct') :?>
                         <div class="fb_correct_answers">

@@ -26,13 +26,13 @@
         $id = '';        
     }
     
-    $cpt = array();
-    $cpt_labels = array();
-    $post_types = get_post_types( array( 'public' => true, '_builtin' => false ), 'objects' );                        
+    $cpt = array('fblms_program','fblms_phase','fblms_course');
+    $cpt_labels = array('fblms_program' => 'Program', 'fblms_phase' => 'Phase', 'fblms_course' => 'Course');
+    /*$post_types = get_post_types( array( 'public' => true, '_builtin' => false ), 'objects' );                        
     foreach ( $post_types as $post_type ) {                         
        array_push($cpt, $post_type->name);
        $cpt_labels[$post_type->name] = $post_type->label;
-    }
+    }*/
 ?>
 
 <div class="wrap fb-wrap">

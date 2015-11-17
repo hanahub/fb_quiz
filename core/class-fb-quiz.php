@@ -17,6 +17,7 @@ class FB_Quiz {
         add_action( 'wp_ajax_fb_edit_quiz', array( $this, 'edit_quiz' ) );
         add_action( 'wp_ajax_fb_get_quiz', array( $this, 'get_quiz' ) );
         add_action( 'wp_ajax_fb_remove_relationship', array( $this, 'remove_relationship' ) );
+        add_action( 'wp_ajax_fb_remove_connection', array( $this, 'remove_connection' ) );
         
         add_action( 'wp_ajax_fb_get_random_questions_by_category', array( $this, 'get_random_questions_by_category' ) );
         
@@ -74,8 +75,7 @@ class FB_Quiz {
                             'description'           => $p['description'],
                             'author'                => $p['author'],
                             'questions'             => serialize($p['questions']),
-                            'num_of_questions'      => $p['num_of_questions'],
-                            'connected_to'          => serialize($p['connected_to']),
+                            'num_of_questions'      => $p['num_of_questions'],                            
                             'passing_percentage'    => $p['passing_percentage'],
                             'layout'                => $p['layout'],
                             'allow_skipping'        => $p['allow_skipping'],
@@ -87,8 +87,32 @@ class FB_Quiz {
                             'updated_at'            => $updated_at
                         ),
                     array('%s', '%s', '%d', '%s', '%d', '%s', '%d', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%s')
-                );               
-        echo json_encode(array(status => 1, id => $wpdb->insert_id, redirect_url => $FB_URL['un'] . '&id=' . $wpdb->insert_id . '&action=edit'));
+                );
+        
+        $quiz_id = $wpdb->insert_id;
+        foreach ($p['connected_to'] as $pid) {
+            $wpdb->insert( $FB_TABLE['connect_relationships'], 
+                    array(
+                            'quiz_id'       => $quiz_id,
+                            'post_id'       => $pid,
+                            'created_at'    => $created_at
+                        ),
+                    array('%d', '%d', '%s')
+            );
+        }
+        
+        foreach ($p['questions'] as $qid) {
+            $wpdb->insert( $FB_TABLE['quiz_relationships'], 
+                    array(
+                            'quiz_id'       => $quiz_id,
+                            'question_id'       => $qid,
+                            'created_at'    => $created_at
+                        ),
+                    array('%d', '%d', '%s')
+            );
+        }
+        
+        echo json_encode(array(status => 1, id => $quiz_id, redirect_url => $FB_URL['un'] . '&id=' . $quiz_id . '&action=edit'));
         die();
     }
     
@@ -110,8 +134,7 @@ class FB_Quiz {
                             'description'           => $p['description'],
                             'author'                => $p['author'],
                             'questions'             => serialize($p['questions']),
-                            'num_of_questions'      => $p['num_of_questions'],
-                            'connected_to'          => serialize($p['connected_to']),
+                            'num_of_questions'      => $p['num_of_questions'],                            
                             'passing_percentage'    => $p['passing_percentage'],
                             'layout'                => $p['layout'],
                             'allow_skipping'        => $p['allow_skipping'],
@@ -125,6 +148,34 @@ class FB_Quiz {
                     array('%s', '%s', '%d', '%s', '%d', '%s', '%d', '%s', '%d', '%d', '%d', '%d', '%s', '%s'),
                     array('%d')
                 );        
+        
+        
+        foreach ($p['connected_to'] as $pid) {            
+            $res = $wpdb->query("SELECT id FROM {$FB_TABLE['connect_relationships']} WHERE quiz_id={$id} AND post_id={$pid}");
+            if ($res == 0) {
+                $wpdb->insert( $FB_TABLE['connect_relationships'], 
+                        array(            
+                                'quiz_id'       => $id,
+                                'post_id'       => $pid,
+                                'created_at'    => $updated_at
+                            ),
+                        array('%d', '%d', '%s')
+                );
+            }
+        }
+        foreach ($p['questions'] as $qid) {
+            $res = $wpdb->query("SELECT id FROM {$FB_TABLE['quiz_relationships']} WHERE quiz_id={$id} AND question_id={$qid}");
+            if ($res == 0) {
+                $wpdb->insert( $FB_TABLE['quiz_relationships'], 
+                        array(
+                                'quiz_id'       => $id,
+                                'question_id'   => $qid,
+                                'created_at'    => $updated_at
+                            ),
+                        array('%d', '%d', '%s')
+                );
+            }
+        }
         
         echo json_encode(array(status => 1, result => $result, redirect_url => $FB_URL['un'] . '&id=' . $id . '&action=edit'));
         die();
@@ -140,10 +191,10 @@ class FB_Quiz {
         
         $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['quizzes'] . " WHERE id=" . $id );
         $result = $dumb[0];        
-        $q_random_questions = $result->random_questions;
+        $q_random_questions = $result->random_questions;                                                                                                   
         $q_random_choices = $result->random_choices;        
         
-        $q_questions = unserialize($result->questions);
+        $q_questions = unserialize($result->questions);                                                                                                    
         if ($q_random_questions == 1) shuffle($q_questions);
         
         $questions = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE id IN (" . implode(", ", $q_questions) . ") ORDER BY FIELD(id, " . implode(", ", $q_questions) . ")" );        
@@ -198,7 +249,36 @@ class FB_Quiz {
         
         echo json_encode(array(status => 1, result => $result));
         die();
-    }        
+    } 
+    
+    /**
+    * Returns all post IDs connected to a quiz
+    * @param int quiz ID
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */
+    public function get_connections($quiz_id) {
+        global $wpdb, $FB_TABLE;
+        $sql = "SELECT post_id FROM {$FB_TABLE['connect_relationships']} WHERE quiz_id={$quiz_id} order by id desc";            
+        $q_connected_to = $wpdb->get_results($sql);
+        
+        return $q_connected_to;
+    }
+    
+    /**
+    * Ajax handler to remove a connection in a quiz     
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
+    public function remove_connection() {
+        global $wpdb, $FB_TABLE;
+        
+        $id = $_REQUEST['id'];
+        $p = $_REQUEST['params'];
+        
+        $result = $wpdb->delete($FB_TABLE['connect_relationships'], array('quiz_id' => $id, 'post_id' => $p['post_id']), array('%d', '%d'));
+        
+        echo json_encode(array(status => 1, result => $result));
+        die();
+    }
 }
 
 

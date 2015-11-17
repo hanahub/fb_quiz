@@ -6,7 +6,7 @@
     $total_attempts = $_REQUEST['total_attempts'];
     $average_score = $_REQUEST['average_score'];    
     
-    $where = ' WHERE 1 ';
+    $where = " WHERE id IN (SELECT DISTINCT quiz_id FROM {$FB_TABLE['answers']}) ";
 
     if (!empty($title)) {
         $where = $where . ' AND title like "%' . $title . '%"';

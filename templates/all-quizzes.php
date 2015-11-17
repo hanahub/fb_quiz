@@ -108,12 +108,12 @@
                         </div>
                     </td>
                     <td>
-                    <?php
-                        $q_connected_to = unserialize($row->connected_to);
+                    <?php                         
+                        $q_connected_to = $quizzes->fb_quiz->get_connections($row->id);
                         if (!empty($q_connected_to)) {
                             $dumb = array();
                             foreach ($q_connected_to as $q_connection) {
-                                $obj = get_post($q_connection);                    
+                                $obj = get_post($q_connection->post_id);                    
                                 array_push($dumb, $obj->post_title);
                             } 
                             echo implode(', ', $dumb);

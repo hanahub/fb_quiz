@@ -1,5 +1,5 @@
 <?php
-    global $wpdb, $FB_TABLE, $current_user;
+    global $wpdb, $FB_TABLE, $current_user, $quizzes;
     
     global $wp_rewrite;
     
@@ -15,7 +15,8 @@
         $q_description = $q_data->description;
         $q_questions = unserialize($q_data->questions);
         $q_num_of_questions = $q_data->num_of_questions;
-        $q_connected_to = unserialize($q_data->connected_to);
+        
+        $q_connected_to = $quizzes->fb_quiz->get_connections($id);
         $q_passing_percentage = $q_data->passing_percentage;
         $q_layout = $q_data->layout;
         $q_allow_skipping = $q_data->allow_skipping;        
@@ -27,12 +28,7 @@
     }
     
     $cpt = array('fblms_program','fblms_phase','fblms_course');
-    $cpt_labels = array('fblms_program' => 'Program', 'fblms_phase' => 'Phase', 'fblms_course' => 'Course');
-    /*$post_types = get_post_types( array( 'public' => true, '_builtin' => false ), 'objects' );                        
-    foreach ( $post_types as $post_type ) {                         
-       array_push($cpt, $post_type->name);
-       $cpt_labels[$post_type->name] = $post_type->label;
-    }*/
+    $cpt_labels = array('fblms_program' => 'Program', 'fblms_phase' => 'Phase', 'fblms_course' => 'Course');    
 ?>
 
 <div class="wrap fb-wrap">
@@ -225,10 +221,10 @@
                     <div id="fb-connections">
                     <?php
                         if (!empty($q_connected_to)) {
-                            foreach ($q_connected_to as $q_connection) {                                
-                                $fb_connection = get_post($q_connection);                                
+                            foreach ($q_connected_to as $q_connection) {
+                                $fb_connection = get_post($q_connection->post_id);                                
                                 echo '
-                                    <div class="fb-choice" data-id="' . $q_connection . '">
+                                    <div class="fb-choice" data-id="' . $q_connection->post_id . '">
                                         <a href="javascript:void(0)" class="fb-remove"><i class="fb-icon icon-minus-squared"></i></a>                                        
                                         <span class="fb-choice-name">[' . $cpt_labels[$fb_connection->post_type] . '] ' . $fb_connection->post_title . '</span>
                                     </div>';
@@ -400,11 +396,29 @@
         $("#fb-connections .fb-remove").live("click", function(e) {
             var dumb = $(this).parents(".fb-choice");
             id = $(dumb).attr("data-id");
-                        
-            $(dumb).fadeOut(200, function() {
-                $(this).remove();
-                $("#connection_row_" + id).show();
-            });
+            
+            if ($("#fb-edit-id").val() != '') {
+                fb_block('#fb-connection_row_');
+                var params = { 'post_id' : id };
+                data = {'action' : 'fb_remove_connection', 'params' : params, 'id' : $("#fb-edit-id").val()};
+                
+                $.post(ajaxurl, data, function(response) {
+                    var result = JSON.parse(response);
+                    if (result['status'] == 1) {
+                        fb_unblock('#fb-connections');
+                        $(dumb).fadeOut(200, function() {
+                            $(this).remove();
+                            $("#connection_row_" + id).show();
+                            
+                        });            
+                    }
+                });
+            } else {
+                $(dumb).fadeOut(200, function() {
+                    $(this).remove();
+                    $("#connection_row_" + id).show();                    
+                });                
+            }
             
         });
         
@@ -457,7 +471,7 @@
             }
         });
         
-        $(".fb-add-connections").click(function(e) {
+        $(".fb-add-connections").live("click", function(e) {
             id = $(this).attr("data-id");
             title = $(this).next(".fb-choice-name").text();
             

@@ -19,7 +19,7 @@
             <tbody id="the-list">
             <?php
                 
-                $sql = "SELECT ID as id FROM {$wpdb->prefix}users ORDER BY ID ASC";
+                $sql = "SELECT ID as id FROM {$wpdb->prefix}users where ID in (SELECT distinct student_id FROM {$FB_TABLE['answers']}) ORDER BY ID ASC";
                 $rows = $wpdb->get_results($sql);
                 
                 foreach ($rows as $row) {        

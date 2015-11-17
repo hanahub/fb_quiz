@@ -245,6 +245,20 @@ class FB_Quizzes {
             require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
             dbDelta( $sql );
         }
+        
+        $table_name = $FB_TABLE['connect_relationships'];
+        if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+            $sql = "CREATE TABLE IF NOT EXISTS `fb_connect_relationships` (
+                      `id` int(11) NOT NULL AUTO_INCREMENT,
+                      `quiz_id` int(11) NOT NULL,
+                      `post_id` int(11) NOT NULL,
+                      `created_at` datetime NOT NULL,
+                      PRIMARY KEY (`id`)
+                    ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=19 ;";
+            
+            require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+            dbDelta( $sql );
+        }
     }
     
     /**

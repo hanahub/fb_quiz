@@ -239,8 +239,8 @@
                     <div class="fb-datatable-wrapper">
                     <?php
                         
-                        $rows = get_posts(array('post_type' => $cpt, 'posts_per_page' => -1, 'post_status' => 'publish'));
-                        
+                        //$rows = get_posts(array('post_type' => $cpt, 'posts_per_page' => -1, 'post_status' => 'publish'));
+                        $rows = $wpdb->get_results("SELECT ID,post_title,post_type FROM `" . $wpdb->prefix . "posts` WHERE `post_type` IN ('fblms_program','fblms_phase','fblms_course') AND post_status = 'publish'");
                         echo '<table id="fb-connections-table" class="fb-datatable fb-fullwidth">';
                         foreach ($rows as $row) {
                             echo '                                

@@ -159,6 +159,8 @@ class FB_Quizzes {
                       `id` smallint(6) NOT NULL AUTO_INCREMENT,
                       `name` varchar(100) NOT NULL,
                       `parent` smallint(6) NOT NULL DEFAULT '0',
+                      `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                      `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                       PRIMARY KEY (`id`),
                       UNIQUE KEY `id` (`id`)
                     ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=23 ;";
@@ -224,6 +226,7 @@ class FB_Quizzes {
                       `student_id` int(10) NOT NULL,
                       `answers` longtext NOT NULL,
                       `created_at` datetime NOT NULL,
+                      `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                       `score` double NOT NULL,
                       `result` varchar(10) NOT NULL,
                       PRIMARY KEY (`id`)
@@ -239,6 +242,8 @@ class FB_Quizzes {
                       `id` int(11) NOT NULL AUTO_INCREMENT,
                       `quiz_id` int(11) NOT NULL,
                       `question_id` int(11) NOT NULL,
+                      `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                      `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                       PRIMARY KEY (`id`)
                     ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=19 ;";
             
@@ -253,6 +258,7 @@ class FB_Quizzes {
                       `quiz_id` int(11) NOT NULL,
                       `post_id` int(11) NOT NULL,
                       `created_at` datetime NOT NULL,
+                      `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                       PRIMARY KEY (`id`)
                     ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=19 ;";
             

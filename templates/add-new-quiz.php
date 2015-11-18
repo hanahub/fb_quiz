@@ -9,8 +9,7 @@
     if (!empty($id) && is_numeric($id) && $action == 'edit') {
         $edit_mode = 1;
         $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['quizzes'] . " WHERE id=" . $id );
-        $q_data = $dumb[0];
-        print_r($q_data);
+        $q_data = $dumb[0];        
         $q_title = $q_data->title;
         $q_description = $q_data->description;
         $q_questions = unserialize($q_data->questions);

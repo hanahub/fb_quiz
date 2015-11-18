@@ -86,7 +86,7 @@ class FB_Quiz {
                             'created_at'            => $created_at,
                             'updated_at'            => $updated_at
                         ),
-                    array('%s', '%s', '%d', '%s', '%d', '%s', '%d', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%s')
+                    array('%s', '%s', '%d', '%s', '%d', '%d', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%s')
                 );
         
         $quiz_id = $wpdb->insert_id;
@@ -145,35 +145,38 @@ class FB_Quiz {
                             'updated_at'            => $updated_at
                         ),
                     array('id' => $id),
-                    array('%s', '%s', '%d', '%s', '%d', '%s', '%d', '%s', '%d', '%d', '%d', '%d', '%s', '%s'),
+                    array('%s', '%s', '%d', '%s', '%d', '%d', '%s', '%d', '%d', '%d', '%d', '%s', '%s'),
                     array('%d')
                 );        
         
-        
-        foreach ($p['connected_to'] as $pid) {            
-            $res = $wpdb->query("SELECT id FROM {$FB_TABLE['connect_relationships']} WHERE quiz_id={$id} AND post_id={$pid}");
-            if ($res == 0) {
-                $wpdb->insert( $FB_TABLE['connect_relationships'], 
-                        array(            
-                                'quiz_id'       => $id,
-                                'post_id'       => $pid,
-                                'created_at'    => $updated_at
-                            ),
-                        array('%d', '%d', '%s')
-                );
+        if (count($p['connected_to']) > 0) {
+            foreach ($p['connected_to'] as $pid) {            
+                $res = $wpdb->query("SELECT id FROM {$FB_TABLE['connect_relationships']} WHERE quiz_id={$id} AND post_id={$pid}");
+                if ($res == 0) {
+                    $wpdb->insert( $FB_TABLE['connect_relationships'], 
+                            array(            
+                                    'quiz_id'       => $id,
+                                    'post_id'       => $pid,
+                                    'created_at'    => $updated_at
+                                ),
+                            array('%d', '%d', '%s')
+                    );
+                }
             }
         }
-        foreach ($p['questions'] as $qid) {
-            $res = $wpdb->query("SELECT id FROM {$FB_TABLE['quiz_relationships']} WHERE quiz_id={$id} AND question_id={$qid}");
-            if ($res == 0) {
-                $wpdb->insert( $FB_TABLE['quiz_relationships'], 
-                        array(
-                                'quiz_id'       => $id,
-                                'question_id'   => $qid,
-                                'created_at'    => $updated_at
-                            ),
-                        array('%d', '%d', '%s')
-                );
+        if (count($p['questions']) > 0) {
+            foreach ($p['questions'] as $qid) {
+                $res = $wpdb->query("SELECT id FROM {$FB_TABLE['quiz_relationships']} WHERE quiz_id={$id} AND question_id={$qid}");
+                if ($res == 0) {
+                    $wpdb->insert( $FB_TABLE['quiz_relationships'], 
+                            array(
+                                    'quiz_id'       => $id,
+                                    'question_id'   => $qid,
+                                    'created_at'    => $updated_at
+                                ),
+                            array('%d', '%d', '%s')
+                    );
+                }
             }
         }
         

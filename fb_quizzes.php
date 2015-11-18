@@ -155,7 +155,7 @@ class FB_Quizzes {
         $table_name = $FB_TABLE['questions_cat'];
         if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
             
-            $sql = "CREATE TABLE IF NOT EXISTS `fb_questions_cat` (
+            $sql = "CREATE TABLE IF NOT EXISTS `fbq_questions_cat` (
                       `id` smallint(6) NOT NULL AUTO_INCREMENT,
                       `name` varchar(100) NOT NULL,
                       `parent` smallint(6) NOT NULL DEFAULT '0',
@@ -170,7 +170,7 @@ class FB_Quizzes {
         
         $table_name = $FB_TABLE['questions'];
         if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-            $sql = "CREATE TABLE IF NOT EXISTS `fb_questions` (
+            $sql = "CREATE TABLE IF NOT EXISTS `fbq_questions` (
                       `id` bigint(20) NOT NULL AUTO_INCREMENT,
                       `author` bigint(20) NOT NULL,
                       `title` longtext NOT NULL,
@@ -193,7 +193,7 @@ class FB_Quizzes {
         
         $table_name = $FB_TABLE['quizzes'];
         if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-            $sql = "CREATE TABLE IF NOT EXISTS `fb_quizzes` (
+            $sql = "CREATE TABLE IF NOT EXISTS `fbq_quizzes` (
                       `id` bigint(20) NOT NULL AUTO_INCREMENT,
                       `author` bigint(20) NOT NULL,
                       `title` varchar(255) NOT NULL,
@@ -218,7 +218,7 @@ class FB_Quizzes {
         
         $table_name = $FB_TABLE['answers'];
         if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-            $sql = "CREATE TABLE IF NOT EXISTS `fb_answers` (
+            $sql = "CREATE TABLE IF NOT EXISTS `fbq_answers` (
                       `id` bigint(20) NOT NULL AUTO_INCREMENT,
                       `quiz_id` bigint(20) NOT NULL,
                       `student_id` int(10) NOT NULL,
@@ -235,7 +235,7 @@ class FB_Quizzes {
         
         $table_name = $FB_TABLE['quiz_relationships'];
         if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-            $sql = "CREATE TABLE IF NOT EXISTS `fb_quiz_relationships` (
+            $sql = "CREATE TABLE IF NOT EXISTS `fbq_quiz_relationships` (
                       `id` int(11) NOT NULL AUTO_INCREMENT,
                       `quiz_id` int(11) NOT NULL,
                       `question_id` int(11) NOT NULL,
@@ -248,7 +248,7 @@ class FB_Quizzes {
         
         $table_name = $FB_TABLE['connect_relationships'];
         if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-            $sql = "CREATE TABLE IF NOT EXISTS `fb_connect_relationships` (
+            $sql = "CREATE TABLE IF NOT EXISTS `fbq_connect_relationships` (
                       `id` int(11) NOT NULL AUTO_INCREMENT,
                       `quiz_id` int(11) NOT NULL,
                       `post_id` int(11) NOT NULL,

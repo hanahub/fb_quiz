@@ -1,11 +1,11 @@
 <?php
     $GLOBALS['FB_TABLE'] = array(
-        'questions_cat' => 'fb_questions_cat',
-        'questions' => 'fb_questions',
-        'quizzes' => 'fb_quizzes',
-        'answers' => 'fb_answers',
-        'quiz_relationships' => 'fb_quiz_relationships',
-        'connect_relationships' => 'fb_connect_relationships'
+        'questions_cat' => 'fbq_questions_cat',
+        'questions' => 'fbq_questions',
+        'quizzes' => 'fbq_quizzes',
+        'answers' => 'fbq_answers',
+        'quiz_relationships' => 'fbq_quiz_relationships',
+        'connect_relationships' => 'fbq_connect_relationships'
     );
     
     $GLOBALS['FB_URL'] = array(

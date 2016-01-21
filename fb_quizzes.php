@@ -66,11 +66,11 @@ class FB_Quizzes {
         wp_register_script( 'fb-global-script', FBQUIZ_URL . 'assets/global.js');
         wp_enqueue_script( 'fb-global-script' );
         
-        wp_register_script( 'fb-angular-script', FBQUIZ_URL . 'assets/angular/angular.min.js');
-        wp_enqueue_script( 'fb-angular-script' );
+//        wp_register_script( 'fb-angular-script', FBQUIZ_URL . 'assets/angular/angular.min.js');
+//        wp_enqueue_script( 'fb-angular-script' );
         
-        wp_register_script( 'fb-multiple-quiz-script', FBQUIZ_URL . 'assets/front-end/multiple_quiz.js');
-        wp_enqueue_script( 'fb-multiple-quiz-script' );
+//        wp_register_script( 'fb-multiple-quiz-script', FBQUIZ_URL . 'assets/front-end/multiple_quiz.js');
+//        wp_enqueue_script( 'fb-multiple-quiz-script' );
         
         wp_register_script( 'fb-blockui-script', FBQUIZ_URL . 'assets/jquery-blockui/jquery.blockUI.min.js', array('jquery') );
         wp_enqueue_script( 'fb-blockui-script' );

@@ -1,7 +1,9 @@
 <?php
     global $user_ID;
-    $student_id = $user_ID;    
-        
+    $student_id = $user_ID;
+    wp_enqueue_script('angular', '//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js', array(), '1.4.7', false);
+    wp_register_script( 'fb-multiple-quiz-script', FBQUIZ_URL . 'assets/front-end/multiple_quiz.js');
+    wp_enqueue_script( 'fb-multiple-quiz-script' );
 ?>
 
 <div class="fb_wrap multiple" ng-app="MultipleQuizModule" ng-controller="MultipleQuizController">    

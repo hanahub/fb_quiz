@@ -81,17 +81,16 @@
         <table class="wp-list-table widefat fixed striped questions fb-data-table" id="questions-table">
             <thead>
                 <tr>
-                    <td id="cb" class="manage-column column-cb check-column"><label class="screen-reader-text" for="cb-select-all-1">Select All</label><input id="cb-select-all-1" type="checkbox"></td>
-                    <th style="width: 9%;" scope="col" id="column-question-id" class="manage-column column-primary sortable desc">Question ID</th>
-                    <th style="width: 19%;" scope="col" id="column-question-title" class="manage-column column-primary sortable desc">Question Title</th>
-                    <th style="width: 9%;" scope="col" id="column-question-type" class="manage-column column-primary sortable desc">Question Type</th>
-                    <th style="width: 9%;" scope="col" id="column-connected-to" class="manage-column column-primary sortable">Connected To</th>
-                    <th style="width: 9%;" scope="col" id="column-number-of-choices" class="manage-column column-primary sortable desc">Number of Choices</th>
-                    <th style="width: 9%;" scope="col" id="column-points" class="manage-column column-primary sortable desc">Points</th>
-                    <th style="width: 9%;" scope="col" id="column-author-name" class="manage-column column-primary sortable">Author Name</th>
-                    <th style="width: 9%;" scope="col" id="column-created-at" class="manage-column column-primary sortable desc">Created On</th>
-                    <th style="width: 9%;" scope="col" id="column-updated-at" class="manage-column column-primary sortable desc">Updated On</th>
-                    <th style="width: 9%;" scope="col" id="column-categories" class="manage-column column-primary sortable">Categories</th>
+                    <td id="cb" class="manage-column column-cb check-column"><label class="screen-reader-text" for="cb-select-all-1">Select All</label><input id="cb-select-all-1" type="checkbox"></td>                    
+                    <th style="width: 20%;" scope="col" id="column-question-title" class="manage-column column-primary sortable desc">Question Title</th>
+                    <th style="width: 10%;" scope="col" id="column-question-type" class="manage-column column-primary sortable desc">Question Type</th>
+                    <th style="width: 10%;" scope="col" id="column-connected-to" class="manage-column column-primary sortable">Connected To</th>
+                    <th style="width: 10%;" scope="col" id="column-number-of-choices" class="manage-column column-primary sortable desc">Number of Choices</th>
+                    <th style="width: 10%;" scope="col" id="column-points" class="manage-column column-primary sortable desc">Points</th>
+                    <th style="width: 10%;" scope="col" id="column-author-name" class="manage-column column-primary sortable">Author Name</th>
+                    <th style="width: 10%;" scope="col" id="column-created-at" class="manage-column column-primary sortable desc">Created On</th>
+                    <th style="width: 10%;" scope="col" id="column-updated-at" class="manage-column column-primary sortable desc">Updated On</th>
+                    <th style="width: 10%;" scope="col" id="column-categories" class="manage-column column-primary sortable">Categories</th>
                 </tr>
             </thead>
             <tbody id="the-list">
@@ -121,8 +120,7 @@
                     <th scope="row" class="check-column">
                         <input class="fb-check-item" id="cb-select-<?php echo $row->id; ?>" type="checkbox" name="post[]" value="<?php echo $row->id; ?>">
                         <div class="locked-indicator"></div>
-                    </th>
-                    <td><?php echo $row->id; ?></td>
+                    </th>                    
                     <td><strong><a class="row-title" href="<?php echo $FB_URL['qn'] . '&id=' . $row->id . '&action=edit'; ?>" title="Edit"><?php echo stripslashes($row->title); ?></a></strong>
                         <div class="row-actions">
                             <span class="edit"><a href="<?php echo $FB_URL['qn'] . '&id=' . $row->id . '&action=edit'; ?>" title="Edit this item">Edit</a> | </span>

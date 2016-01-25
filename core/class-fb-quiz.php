@@ -90,26 +90,30 @@ class FB_Quiz {
                 );
         
         $quiz_id = $wpdb->insert_id;
-        foreach ($p['connected_to'] as $pid) {
-            $wpdb->insert( $FB_TABLE['connect_relationships'], 
-                    array(
-                            'quiz_id'       => $quiz_id,
-                            'post_id'       => $pid,
-                            'created_at'    => $created_at
-                        ),
-                    array('%d', '%d', '%s')
-            );
+        if (isset($p['connected_to'])) {
+            foreach ($p['connected_to'] as $pid) {
+                $wpdb->insert( $FB_TABLE['connect_relationships'], 
+                        array(
+                                'quiz_id'       => $quiz_id,
+                                'post_id'       => $pid,
+                                'created_at'    => $created_at
+                            ),
+                        array('%d', '%d', '%s')
+                );
+            }
         }
         
-        foreach ($p['questions'] as $qid) {
-            $wpdb->insert( $FB_TABLE['quiz_relationships'], 
-                    array(
-                            'quiz_id'       => $quiz_id,
-                            'question_id'       => $qid,
-                            'created_at'    => $created_at
-                        ),
-                    array('%d', '%d', '%s')
-            );
+        if (isset($p['questions'])) {
+            foreach ($p['questions'] as $qid) {
+                $wpdb->insert( $FB_TABLE['quiz_relationships'], 
+                        array(
+                                'quiz_id'       => $quiz_id,
+                                'question_id'       => $qid,
+                                'created_at'    => $created_at
+                            ),
+                        array('%d', '%d', '%s')
+                );
+            }
         }
         
         echo json_encode(array(status => 1, id => $quiz_id, redirect_url => $FB_URL['un'] . '&id=' . $quiz_id . '&action=edit'));

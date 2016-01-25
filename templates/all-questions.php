@@ -82,15 +82,16 @@
             <thead>
                 <tr>
                     <td id="cb" class="manage-column column-cb check-column"><label class="screen-reader-text" for="cb-select-all-1">Select All</label><input id="cb-select-all-1" type="checkbox"></td>
-                    <th style="width: 10%;" scope="col" id="column-question-id" class="manage-column column-primary sortable desc">Question ID</th>
-                    <th style="width: 20%;" scope="col" id="column-question-title" class="manage-column column-primary sortable desc">Question Title</th>
-                    <th style="width: 10%;" scope="col" id="column-connected-to" class="manage-column column-primary sortable">Connected To</th>
-                    <th style="width: 10%;" scope="col" id="column-number-of-choices" class="manage-column column-primary sortable desc">Number of Choices</th>
-                    <th style="width: 10%;" scope="col" id="column-points" class="manage-column column-primary sortable desc">Points</th>
-                    <th style="width: 10%;" scope="col" id="column-author-name" class="manage-column column-primary sortable">Author Name</th>
-                    <th style="width: 10%;" scope="col" id="column-created-at" class="manage-column column-primary sortable desc">Created At</th>
-                    <th style="width: 10%;" scope="col" id="column-updated-at" class="manage-column column-primary sortable desc">Updated At</th>
-                    <th style="width: 10%;" scope="col" id="column-categories" class="manage-column column-primary sortable">Categories</th>
+                    <th style="width: 9%;" scope="col" id="column-question-id" class="manage-column column-primary sortable desc">Question ID</th>
+                    <th style="width: 19%;" scope="col" id="column-question-title" class="manage-column column-primary sortable desc">Question Title</th>
+                    <th style="width: 9%;" scope="col" id="column-question-type" class="manage-column column-primary sortable desc">Question Type</th>
+                    <th style="width: 9%;" scope="col" id="column-connected-to" class="manage-column column-primary sortable">Connected To</th>
+                    <th style="width: 9%;" scope="col" id="column-number-of-choices" class="manage-column column-primary sortable desc">Number of Choices</th>
+                    <th style="width: 9%;" scope="col" id="column-points" class="manage-column column-primary sortable desc">Points</th>
+                    <th style="width: 9%;" scope="col" id="column-author-name" class="manage-column column-primary sortable">Author Name</th>
+                    <th style="width: 9%;" scope="col" id="column-created-at" class="manage-column column-primary sortable desc">Created On</th>
+                    <th style="width: 9%;" scope="col" id="column-updated-at" class="manage-column column-primary sortable desc">Updated On</th>
+                    <th style="width: 9%;" scope="col" id="column-categories" class="manage-column column-primary sortable">Categories</th>
                 </tr>
             </thead>
             <tbody id="the-list">
@@ -122,12 +123,13 @@
                         <div class="locked-indicator"></div>
                     </th>
                     <td><?php echo $row->id; ?></td>
-                    <td><strong><a class="row-title" href="<?php echo $FB_URL['qn'] . '&id=' . $row->id . '&action=edit'; ?>" title="Edit"><?php echo $row->title; ?></a></strong>
+                    <td><strong><a class="row-title" href="<?php echo $FB_URL['qn'] . '&id=' . $row->id . '&action=edit'; ?>" title="Edit"><?php echo stripslashes($row->title); ?></a></strong>
                         <div class="row-actions">
                             <span class="edit"><a href="<?php echo $FB_URL['qn'] . '&id=' . $row->id . '&action=edit'; ?>" title="Edit this item">Edit</a> | </span>
                             <span class="trash"><a href="<?php echo $FB_URL['qa'] . '&id[]=' . $row->id . '&action=trash'; ?>" class="fb_submitdelete" title="Delete this item" href="">Delete</a></span>
                         </div>
                     </td>
+                    <td><?php echo ucfirst($row->type); ?></td>
                     <td>
                     <?php
                         global $quizzes;
@@ -137,8 +139,8 @@
                     <td><?php echo $row->number_of_choices; ?></td>
                     <td><?php echo $row->points; ?></td>
                     <td><a href="<?php echo $FB_URL['qa'] . '&author=' . $row->author; ?>"><?php echo $user->user_nicename; ?></a></td>
-                    <td><?php echo $row->created_at; ?></td>
-                    <td><?php echo $row->updated_at; ?></td>
+                    <td><?php echo fb_date($row->created_at); ?></td>
+                    <td><?php echo fb_date($row->updated_at); ?></td>
                     <td><?php if (!empty($cats_str)) echo implode(", ", $cats_str); ?></td>                
                 </tr>
             <?php 

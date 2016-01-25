@@ -1,5 +1,5 @@
 <?php
-    global $wpdb, $FB_TABLE, $current_user;
+    global $wpdb, $FB_TABLE, $current_user, $FB_URL;
     
     $id = $_REQUEST['id'];
     $action = $_REQUEST['action'];
@@ -34,7 +34,10 @@
                 <label for="post-status">Status:</label>
                 <span id="post-status-display"><?php echo ucwords($q_data->status); ?></span>
             <?php endif; ?>
-            <div id="publishing-action">                                
+            <div id="publishing-action">
+                <?php if ($edit_mode == 1) : ?>
+                    <a href="<?php echo $FB_URL['qn']; ?>" type="button" class="button button-primary button-large" id="fb-add">Add Another Question</a>
+                <?php endif; ?>                                
                 <input type="button" class="button button-primary button-large" id="fb-publish" value="<?php if ($edit_mode == 1) echo 'Update'; else echo 'Publish'; ?>"/>
                 <input type="button" class="button button-large" id="fb-draft" value="Draft"/>
                 <?php if ($edit_mode == 1) : ?>
@@ -47,7 +50,7 @@
         <div class="fb-half-left">
             <div class="fb-input-field fb-row">
                 <label for="fb-question">Question:</label>        
-                <?php wp_editor( $q_title, 'fb-question-title', $settings = array('textarea_name'=>'fb-question-title', 'editor_height'=>'200px') ); ?>
+                <?php wp_editor( stripslashes($q_title), 'fb-question-title', $settings = array('textarea_name'=>'fb-question-title', 'editor_height'=>'200px') ); ?>
             </div>
             <div class="fb-row">
                 <div class="fb-fieldset fb-choices-box" id="fb-choices-box">
@@ -285,6 +288,11 @@
                     choices['correct'].push(i + 1);
                 }
             });
+            
+            if (type != 'sorting' && choices['correct'].length == 0) {
+                alert("Please choose at least one correct answer.");
+                return;
+            }
             
             var number_of_choices = $choices_list.length;
             

@@ -18,6 +18,11 @@
         'my_quizzes' => home_url( '/my-quizzes/' ),
         'results' => home_url( '/results/' )
     );
+    
+    function fb_date($d) {
+        $pd = strtotime($d);
+        return date('m-d-Y H:i', $pd);
+    }
  
 
 ?>

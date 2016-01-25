@@ -426,6 +426,23 @@ table.dataTable.no-footer {
     float: left;
 }
 
+span.arrow-hack {
+  margin-left: 5px;
+}
+table.dataTable thead .sorting, table.dataTable thead .sorting_asc, table.dataTable thead .sorting_desc {
+    background-image: none;
+}
+span.sort {
+  background: url(../images/sort_both.png) no-repeat -5px 0px;
+}
+.sorting_asc span.sort {
+  background: url(../images/sort_asc.png) no-repeat -5px 0px;
+}
+.sorting_desc span.sort {
+  background: url(../images/sort_desc.png) no-repeat -5px 0px;
+}
+
+
                         
 
 

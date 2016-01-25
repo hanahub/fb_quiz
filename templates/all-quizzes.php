@@ -76,8 +76,8 @@
                     <th style="width: 12%;" scope="col" class="manage-column column-primary sortable desc">Number of Questions</th>
                     <th style="width: 12%;" scope="col" class="manage-column column-primary sortable desc">Passing Percentage</th>
                     <th style="width: 10%;" scope="col" class="manage-column column-primary">Author</th>
-                    <th style="width: 15%;" scope="col" class="manage-column column-primary sortable desc">Created At</th>
-                    <th style="width: 15%;" scope="col" class="manage-column column-primary sortable desc">Updated At</th>                
+                    <th style="width: 15%;" scope="col" class="manage-column column-primary sortable desc">Created On</th>
+                    <th style="width: 15%;" scope="col" class="manage-column column-primary sortable desc">Updated On</th>                
                 </tr>
             </thead>
             <tbody id="the-list">
@@ -123,8 +123,8 @@
                     <td><?php echo $row->num_of_questions; ?></td>
                     <td><?php echo $row->passing_percentage . '%'; ?></td>
                     <td><a href="<?php echo $FB_URL['qa'] . '&author=' . $row->author; ?>"><?php echo $user->user_nicename; ?></a></td>                
-                    <td><?php echo $row->created_at; ?></td>
-                    <td><?php echo $row->updated_at; ?></td>                
+                    <td><?php echo fb_date($row->created_at); ?></td>
+                    <td><?php echo fb_date($row->updated_at); ?></td>                
                 </tr>
             <?php 
                 }

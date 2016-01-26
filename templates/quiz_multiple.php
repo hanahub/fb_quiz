@@ -27,7 +27,7 @@
                 <ul data-id="{{ question['id'] }}" data-type="{{ question['type'] }}" class="fb_question_content {{ question['type'] }}" ng-if="question['type'] != 'sorting'">
                     <li order-no="{{ $index }}" data-id="{{ choice[0] }}" ng-repeat="choice in question['choices']['choices'] track by $index">
                         <div class="fb_choice_wrapper" ng-if="question['type'] == 'multiple'">
-                            <input ng-checked="answer[questionNum].indexOf(choice[0]) > -1" ng-click="answerClicked()" type="checkbox" name="fb_question_{{ $index }}" id="fb_choice_{{ $index }}"/>
+                            <input ng-checked="answer[questionNum-1].indexOf(choice[0]) > -1" ng-click="answerClicked()" type="checkbox" name="fb_question_{{ $index }}" id="fb_choice_{{ $index }}"/>
                         </div>                        
                         <div class="fb_choice_wrapper" ng-if="question['type'] == 'single'">
                             <input data-x="{{answer[questionNum-1].indexOf(choice[0])}}" ng-checked="answer[questionNum-1].indexOf(choice[0]) > -1" ng-click="answerClicked()" type="radio" name="fb_question[]" id="fb_choice_{{ $index }}"/>

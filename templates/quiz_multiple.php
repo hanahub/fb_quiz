@@ -32,7 +32,7 @@
                         <div class="fb_choice_wrapper" ng-if="question['type'] == 'single'">
                             <input ng-checked="initCheck(choice[0])" ng-click="answerClicked()" type="radio" name="fb_question[]" id="fb_choice_{{ $index }}"/>
                         </div>                        
-                        <label for="fb_choice_{{ $index }}">{{ choice[1] }}</label>
+                        <label for="fb_choice_{{ $index }}" ng-bind-html="choice[1] | trustAsHtml"></label>
                     </li>
                 </ul>
             </div>

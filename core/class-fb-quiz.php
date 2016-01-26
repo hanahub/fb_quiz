@@ -209,6 +209,7 @@ class FB_Quiz {
         $i = 0;
         for ($i = 0; $i < count($questions); $i ++) {        
             $questions[$i]->choices = unserialize($questions[$i]->choices);            
+            $questions[$i]->title = stripslashes($questions[$i]->title);
             unset($questions[$i]->choices['correct']);
             
             if ($questions[$i]->type == 'sorting') {                                

@@ -45,7 +45,7 @@ class FB_Question {
         $wpdb->insert( $FB_TABLE['questions'],
                     array(
                             'author'                => $p['author'],
-                            'title'                 => $p['title'],
+                            'title'                 => stripslashes($p['title']),
                             'type'                  => $p['type'],
                             'points'                => $p['points'],
                             'cats'                  => serialize($p['cats']),

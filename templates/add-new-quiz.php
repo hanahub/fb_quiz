@@ -104,7 +104,7 @@
                             foreach ($q_questions as $question) {
                                 
                                 $dumb = $wpdb->get_row( "SELECT * FROM " . $FB_TABLE['questions']  . " WHERE id=" . $question );
-                                $question_title = $dumb->title;
+                                $question_title = stripslashes($dumb->title);
                                 
                                 echo '
                                     <div class="fb-choice" data-id="' . $question . '">
@@ -137,7 +137,7 @@
                                 <tr id="question_row_' . $row->id . '"><td>
                                     <div class="fb-choice">
                                         <a data-id="' . $row->id . '" href="javascript:void(0)" class="fb-add"><i class="fb-icon icon-plus-squared"></i></a>                                        
-                                        <span class="fb-choice-name">' . $row->title . '</span>                                        
+                                        <span class="fb-choice-name">' . stripslashes($row->title) . '</span>                                        
                                     </div>
                                 
                                 </td></tr>';

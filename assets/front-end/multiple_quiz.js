@@ -121,11 +121,12 @@ angular.module('MultipleQuizModule', [])
     }
     
     $scope.initCheck = function(id) {
-        if (typeof $scope.answer == 'undefined') return '';
+        if (typeof $scope.answer == 'undefined') return false;
         for (i = 0; i < $scope.answer.length; i++) {
-            if ($scope.answer[i] == id) return "checked";
+            if ($scope.answer[i] == id) 
+                return false;
         }
-        return '';
+        return false;
     }
     
     $scope.submitAnswers = function () {

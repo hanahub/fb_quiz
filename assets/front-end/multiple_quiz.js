@@ -11,11 +11,13 @@ angular.module('MultipleQuizModule', [])
     
     $scope.questionNum = 1;    
     $scope.allowSkip = 0;
+    $scope.answer = [];
     
     function init() {      
         var url = ajaxurl + '?action=fb_get_quiz&qid=' + $scope.quiz_id;        
         
-        fb_block(".fb_wrap");
+        //fb_block(".fb_wrap");
+        jQuery(".fb_wrap").hide();
         $http.get(url, config).success(function(response) {
             $scope.quiz = response['result'];            
             
@@ -39,7 +41,9 @@ angular.module('MultipleQuizModule', [])
             handleSortableQuestion();
             
             $timeout(function () {
-                fb_unblock(".fb_wrap");
+                //fb_unblock(".fb_wrap");
+                jQuery(".fb_wrap").css("visibility", "visible");
+                jQuery(".fb_wrap").fadeIn(300);
             }, 200);  
             
         }).error(function(data, status, headers, config) {
@@ -95,7 +99,8 @@ angular.module('MultipleQuizModule', [])
         $scope.quesionTitle = $scope.questionNum + '. ' + $scope.question['title'] + ' (' + $scope.question['points'] + ' points)';
         
         handleSortableQuestion();        
-        $scope.answer = result[n].answers[0];
+        $scope.answer[n] = result[n].answers[0];
+        console.log($scope.answer);
     }
     
     $scope.nextQuestion = function () {
@@ -118,6 +123,8 @@ angular.module('MultipleQuizModule', [])
         });
         
         result[$scope.questionNum - 1].answers[0] = answer;
+        $scope.answer[$scope.questionNum - 1] = result[$scope.questionNum - 1].answers[0];
+        console.log($scope.answer);
     }
     
     $scope.initCheck = function(id) {

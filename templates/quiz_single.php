@@ -145,7 +145,7 @@ jQuery(document).ready(function($) {
             if ($("input[name=" + name + "]:checked").length > 0)  {
                 if (num_answered.indexOf(name) < 0) num_answered.push(name);
             } else {
-                num_answered.pop(name);
+                num_answered.remove(name);
             }
         } else {
             if (num_answered.indexOf(name) < 0) num_answered.push(name);

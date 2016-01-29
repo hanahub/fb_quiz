@@ -61,7 +61,8 @@
         
         array_push($output, array(
                         'correct'           => $correct,
-                        'title'             => $i . '. ' . $q->title . ' (' . $q->points . ' points)',
+                        'title'             => $i . '. ' . $q->title,
+                        'points'            => $q->points,
                         'student_choices'   => $student_choices,
                         'correct_choices'   => $correct_choices,
                         'explanation'       => $q->correct_explanation
@@ -76,8 +77,16 @@
     } else {
         $result_status = 'Failed';
     }
+
+    if ($result_status == 'Passed') {
+        $passfail = '<span class="quiz-passed"><span class="fa fa-check"></span> ';
+    } else {
+        $passfail = '<span class="quiz-failed"><span class="fa fa-close"></span> ';
+    }
     
-    $a_title = $q_data->title . ' Results &nbsp;&nbsp;&nbsp;&nbsp;' . $correct_points . '/' . $total_points . ' points (' . $result_percentage . '%) ' . $result_status;
+    $a_title = $q_data->title . ' Results';
+
+    $a_results = $passfail . $result_status . ' </span>' . $correct_points . '/' . $total_points . ' points (' . $result_percentage . '%)';
     
     $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['answers'] . " WHERE id=" . $result_id );
     $wpdb->update(
@@ -91,18 +100,23 @@
 ?>
 
 <div class="fb_wrap">
-    <h3 class="fb_title"><?php echo $a_title; ?></h3>    
+    <h3 class="fb_title"><?php echo $a_title; ?></h3>
+    <div class="quiz-results"><?php echo $a_results; ?></div>
     
     <?php
         foreach ($output as $o) {
     ?>            
             <div class="fb_row">
-                <div class="fb_result_status"><?php echo $o['correct']; ?></div>
                 <div class="fb_result_content">
-                    <div class="fb_question_title"><?php echo $o['title']; ?></div>
+                    <div class="fb_question_title"><?php echo $o['title']; ?>
+                        <?php if ($o['correct'] == 'Wrong') { ?>
+                            <span class="fail-points">(<?php echo $o['points'];?> Points)</span><span class="fail-text"> INCORRECT</span><?php }
+                        else { ?>
+                            <span class="pass-points">(<?php echo $o['points'];?> Points)</span><span class="pass-text"> CORRECT</span><?php } ?>
+                    </div>
                     <div class="fb_answers">
                         <div class="fb_student_answers">
-                            <label>- Student Answers</label>
+                            <label>Your Answer</label>
                             <?php if (count($o['student_choices']) > 0) :?>
                                 <ul><li><?php echo implode('</li><li>', $o['student_choices']); ?></li></ul>
                             <?php else : ?>
@@ -111,7 +125,7 @@
                         </div>
                         <?php if ($o['correct'] != 'Correct') :?>
                         <div class="fb_correct_answers">
-                            <label>- Correct Answers</label>
+                            <label>Correct Answer</label>
                             <ul><li><?php echo implode('</li><li>', $o['correct_choices']); ?></li></ul>
                         </div>
                         <?php endif; ?>
@@ -132,8 +146,8 @@
     ?>
     
     <div class="fb_quiz_footer">
-        <input type="button" id="fb_take_quiz_again" value="Take Quiz Again" onclick="javascript: location.href = '<?php echo $FB_URL['quizzes'] . $quiz_id; ?>';"/>
-        <input type="button" id="fb_back" value="Back"/>
+        <input type="button" id="fb_take_quiz_again" value="Take Quiz Again" onclick="javascript: location.href = '<?php echo $FB_URL['quizzes'] . $quiz_id; ?>';" class="btn btn-nav"/>
+        <input type="button" onclick="javascript: location.href = '<?php echo $FB_URL['quizzes'] ?>';" value="View All Quiz Results" class="btn btn-nav"/>
         <input type="hidden" id="fb_quiz_id" value="<?php echo $quiz_id; ?>"/>        
     </div>
 </div>

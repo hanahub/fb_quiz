@@ -11,9 +11,10 @@ ul.fb_question_content li > label {
 }
 .fb_choice_wrapper {
     float: left;
-    width: 22px;
-    padding-top: 2px;
+    width: 40px;
+    padding-top: 0px;
     position: relative;
+    margin-top: -3px;
 } 
 .fb_choice_wrapper > input {
     margin-top: 2px;
@@ -29,7 +30,9 @@ ul.fb_question_content li > label {
     cursor: move;
 }
 .fb_choice_wrapper .fb-icon {
-    margin-left: 0px;
+    margin-left: 3px;
+    font-size: 24px;
+    padding: 5px;
 }
 .single-quiz .entry-title {
     display: none;
@@ -61,7 +64,7 @@ ul.fb_question_content li > label {
     float: left;
 }
 #fb_back {
-    float: right;
+    /* float: right; */
 }
 .fb_result_status {
     width: 80px;

@@ -28,7 +28,7 @@
 ?>
 
 <div class="fb_wrap">
-    <h3 class="fb_quiz_title"><?php echo $q_title . ' (Passing ' . $q_passing_percentage . '%)'; ?></h3>
+    <h3 class="fb_quiz_title"><?php echo $q_title . ' <span class="title-small">(Passing ' . $q_passing_percentage . '%)</span>'; ?></h3>
     <p class="fb_quiz_description"><?php echo $q_description; ?></p>
     
     <?php
@@ -41,7 +41,7 @@
         foreach ($questions as $q) {
             $choices = unserialize($q->choices);
             echo '<div class="fb_row">';
-                echo '<div class="fb_question_title">' . $i . '. ' . stripslashes($q->title) . ' (' . $q->points . ' points)</div>';
+                echo '<div class="fb_question_title">' . $i . '. ' . stripslashes($q->title) . ' <span class="points">(' . $q->points . ' points)</span></div>';
                 echo '<ul id="fb_question_' . $q->id . '" data-id="' . $q->id . '" data-type="' . $q->type . '" class="fb_question_content ' . $q->type . '">';
                 
                 $j = 1;
@@ -73,7 +73,7 @@
                         
                         $choice_id = "fb_choice_{$i}_{$j}";
                         $choice_html = '
-                                <li order-no="' . $j . '" data-id="' . $choice[0] . '"><div class="fb_choice_wrapper"><input class="fb_radio_checkbox" type="' . $input_type . '" name="fb_question_' . $i . '" id="' . $choice_id . '"/></div><label for="' . $choice_id . '">' . $choice[1] . '</label></li>
+                                <li order-no="' . $j . '" data-id="' . $choice[0] . '"><div class="fb_choice_wrapper"><input class="fb_radio_checkbox" type="' . $input_type . '" name="fb_question_' . $i . '" id="' . $choice_id . '"/><label for="' . $choice_id . '" class="radio-label"><span></span></div>' . $choice[1] . '</label></li>
                             ';
                         
                         echo $choice_html;
@@ -89,7 +89,7 @@
     
     <div class="fb_quiz_footer">
         <p class="finish_quiz_text">You must answer all the question in order to finish the quiz.</p>
-        <input type="button" id="fb_submit" value="Finish" disabled/>
+        <input type="button" id="fb_submit" value="Finish" disabled class="btn btn-nav"/>
         <input type="hidden" id="fb_quiz_id" value="<?php echo $quiz_id; ?>"/>
         <input type="hidden" id="fb_student_id" value="<?php echo $student_id; ?>"/>
     </div>

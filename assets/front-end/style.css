@@ -128,7 +128,7 @@ ul.fb_question_content li > label {
     float: left;
 }
 #fb_back {
-    float: right;
+    /* float: right; */
 }
 .fb_result_status {
     width: 80px;

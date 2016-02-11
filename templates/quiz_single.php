@@ -29,7 +29,7 @@
 ?>
 
 <div class="fb_wrap single fb_quiz" ng-app="SingleQuizModule" ng-controller="SingleQuizController">    
-    <h3 class="fb_quiz_title"><?php echo $q_title . ' (Passing ' . $q_passing_percentage . '%)'; ?></h3>
+    <h3 class="fb_quiz_title"><?php echo $q_title . ' <span class="title-small">(Passing ' . $q_passing_percentage . '%)</span>'; ?></h3>
     <p class="fb_quiz_description"><?php echo $q_description; ?></p>
     <div class="fb_result" id="fb_result"></div>
     <div class="fb_timer" id="fb_timer" <?php if ($q_show_timer == 0) echo 'style="display: none;"'; ?>>00:00</div>

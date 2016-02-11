@@ -10,13 +10,14 @@
 ?>
 
 <div class="fb_wrap">
-    <h3 class="fb_title">My Quizzes</h3>    
+    <h3 class="fb_title">My Quizzes</h3>
+    <div class="table-responsive">
     <table class="quizzes" id="quizzes-table">
         <thead>
             <tr>                
                 <th id="column-quiz-id" class=""></th>
                 <th id="column-quiz-title" class="">Quiz Title</th>
-                <th id="column-quiz-attempts" class="">Total number of attempts</th>
+                <th id="column-quiz-attempts" class="">Attempts</th>
                 <th id="column-last-score" class="">Last Score</th>
                 <th id="column-highest-score" class="">Highest Score</th>
                 <th id="column-quiz-action" class=""></th>                
@@ -51,7 +52,7 @@
                         <td>' . $row->attempts . '</td>
                         <td>' . $last_score . '</td>
                         <td>' . $highest_score . '</td>
-                        <td><a class="fb_link" href="' . $FB_URL['quizzes'] . $row->qid . '">Take quiz again</a></td>
+                        <td><a class="btn btn-nav quiz-btn" href="' . $FB_URL['quizzes'] . $row->qid . '">Retake Quiz</a></td>
                     </tr>
                 ';
                 
@@ -60,4 +61,5 @@
         ?>
         </tbody>
     </table>
+    </div>
 </div>    

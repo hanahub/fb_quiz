@@ -49,6 +49,12 @@
 .icon-search:before {
   content: '\e807';
 }
+.icon-failed:before, .failed > .fb-icon:before {
+  content: '\e808';
+}
+.icon-passed:before, .passed > .fb-icon:before {
+  content: '\e809';
+}
 .clearfix:before,
 .clearfix:after {
     content: " ";

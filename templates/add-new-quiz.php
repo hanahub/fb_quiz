@@ -1,5 +1,5 @@
 <?php
-    global $wpdb, $FB_TABLE, $current_user, $quizzes;
+    global $wpdb, $FB_TABLE, $current_user, $quizzes, $FB_URL;
     
     global $wp_rewrite;
     
@@ -22,6 +22,7 @@
         $q_immediate_feedback = $q_data->immediate_feedback;
         $q_random_questions = $q_data->random_questions;
         $q_random_choices = $q_data->random_choices;        
+        $q_show_timer = $q_data->show_timer;        
     } else {
         $id = '';        
     }
@@ -39,7 +40,10 @@
                 <label for="post-status">Status:</label>
                 <span id="post-status-display"><?php echo ucwords($q_data->status); ?></span>
             <?php endif; ?>
-            <div id="publishing-action">                                
+            <div id="publishing-action">
+                <?php if ($edit_mode == 1) : ?>
+                    <a target="_blank" href="<?php echo $FB_URL['quizzes'] . $id; ?>" class="button button-primary button-large" id="fb-view">View Quiz</a>
+                <?php endif; ?>                                
                 <input type="button" class="button button-primary button-large" id="fb-publish" value="<?php if ($edit_mode == 1) echo 'Update'; else echo 'Publish'; ?>"/>
                 <input type="button" class="button button-large" id="fb-draft" value="Draft"/>
                 <?php if ($edit_mode == 1) : ?>
@@ -74,9 +78,10 @@
                     <tr class="fb-quiz-checkboxes">
                         <td colspan="2">
                             <label for="fb-allow-skipping"><input type="checkbox" name="fb-allow-skipping" id="fb-allow-skipping" <?php if ($q_allow_skipping == 1 || $edit_mode != 1) echo "checked"; ?>>Allow Skipping questions (if one question per page layout)</label>
-                            <!--<label for="fb-immediate-feedback"><input type="checkbox" name="fb-immediate-feedback" id="fb-immediate-feedback" <?php if ($q_immediate_feedback == 1) echo "checked"; ?>>Immediate Feedback</label>-->
+                            <label for="fb-immediate-feedback"><input type="checkbox" name="fb-immediate-feedback" id="fb-immediate-feedback" <?php if ($q_immediate_feedback == 1) echo "checked"; ?>>Immediate Feedback</label>
                             <label for="fb-random-questions"><input type="checkbox" name="fb-random-questions" id="fb-random-questions" <?php if ($q_random_questions == 1 || $edit_mode != 1) echo "checked"; ?>>Random Questions Order</label>
                             <label for="fb-random-choices"><input type="checkbox" name="fb-random-choices" id="fb-random-choices" <?php if ($q_random_choices == 1 || $edit_mode != 1) echo "checked"; ?>>Random Choices Order</label>
+                            <label for="fb-show-timer"><input type="checkbox" name="fb-show-timer" id="fb-show-timer" <?php if ($q_show_timer == 1) echo "checked"; ?>>Show Timer</label>
                         </td>
                     </tr>
                     <tr>
@@ -313,9 +318,11 @@
             var immediate_feedback = $("#fb-immediate-feedback").is(":checked") ? 1 : 0;
             var random_questions = $("#fb-random-questions").is(":checked") ? 1 : 0;
             var random_choices = $("#fb-random-choices").is(":checked") ? 1 : 0;
+            var show_timer = $("#fb-show-timer").is(":checked") ? 1 : 0;
+            
             
             var params = { 'title': title, 'description': description, 'questions': questions, 'connected_to': connected_to, 'passing_percentage': passing_percentage, 'layout': layout, 'allow_skipping': allow_skipping,
-                 'author': author, 'status': status, 'num_of_questions': questions_total, 'immediate_feedback': immediate_feedback, 'random_questions': random_questions, 'random_choices': random_choices };
+                 'author': author, 'status': status, 'num_of_questions': questions_total, 'immediate_feedback': immediate_feedback, 'random_questions': random_questions, 'random_choices': random_choices, 'show_timer': show_timer };
             var data = {};
             if ($("#fb-edit-id").val() != '')
                 data = {'action' : 'fb_edit_quiz', 'params' : params, 'id' : $("#fb-edit-id").val()};

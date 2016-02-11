@@ -37,7 +37,13 @@ class FB_Quizzes {
         add_filter( 'the_content', array( $this, "the_content" ) );
         
         add_action( 'wp_ajax_fb_add_answer', array( $this, 'add_answer' ) );
-        add_action( 'wp_ajax_nopriv_fb_add_answer', array( $this, 'add_answer' ) );        
+        add_action( 'wp_ajax_nopriv_fb_add_answer', array( $this, 'add_answer' ) );                
+        
+        add_action( 'wp_ajax_fb_get_quiz_result', array( $this, 'get_quiz_result' ) );
+        add_action( 'wp_ajax_nopriv_fb_get_quiz_result', array( $this, 'get_quiz_result' ) );        
+        
+        add_action( 'wp_ajax_fb_evaluate_answer', array( $this, 'evaluate_answer' ) );
+        add_action( 'wp_ajax_nopriv_fb_evaluate_answer', array( $this, 'evaluate_answer' ) );
         
         if (!is_admin()) { 
             add_action( 'wp_head', array( $this, 'ajaxurl' ) );
@@ -65,12 +71,6 @@ class FB_Quizzes {
     function register_scripts() {
         wp_register_script( 'fb-global-script', FBQUIZ_URL . 'assets/global.js');
         wp_enqueue_script( 'fb-global-script' );
-        
-//        wp_register_script( 'fb-angular-script', FBQUIZ_URL . 'assets/angular/angular.min.js');
-//        wp_enqueue_script( 'fb-angular-script' );
-        
-//        wp_register_script( 'fb-multiple-quiz-script', FBQUIZ_URL . 'assets/front-end/multiple_quiz.js');
-//        wp_enqueue_script( 'fb-multiple-quiz-script' );
         
         wp_register_script( 'fb-blockui-script', FBQUIZ_URL . 'assets/jquery-blockui/jquery.blockUI.min.js', array('jquery') );
         wp_enqueue_script( 'fb-blockui-script' );
@@ -211,6 +211,7 @@ class FB_Quizzes {
                       `immediate_feedback` tinyint(1) NOT NULL DEFAULT '0',
                       `random_questions` tinyint(1) NOT NULL DEFAULT '0',
                       `random_choices` tinyint(1) NOT NULL DEFAULT '0',
+                      `show_timer` tinyint(1) NOT NULL,
                       PRIMARY KEY (`id`)
                     ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;";
             
@@ -229,6 +230,7 @@ class FB_Quizzes {
                       `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                       `score` double NOT NULL,
                       `result` varchar(10) NOT NULL,
+                      `time_taken` int(12) NOT NULL,
                       PRIMARY KEY (`id`)
                     ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=42 ;";
             
@@ -552,11 +554,181 @@ class FB_Quizzes {
                             'quiz_id'               => $p['quiz_id'],
                             'student_id'            => $p['student_id'],                            
                             'answers'               => serialize($p['answers']),                            
+                            'created_at'            => $created_at,
+                            'time_taken'            => $p['time_taken']
+                        ),
+                    array('%d', '%d', '%s', '%s', '%d')
+                );               
+        echo json_encode(array(status => 1, id => $wpdb->insert_id, redirect_url => $FB_URL['results'] . '/' . $wpdb->insert_id));
+        die();
+    }
+    
+    /**
+    * Updates existing answer in answers table        
+    * @return array status and answer ID
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
+    function update_answer() {
+        global $wpdb, $FB_TABLE;
+        
+        $updated_at = date('Y-m-d H:i:s', time());       
+                
+        $result = $wpdb->update( $FB_TABLE['answers'],
+                    array(
+                            'answers'               => serialize($_REQUEST['answers']),                            
+                            'updated_at'            => $updated_at
+                        ),
+                    array('id' => $_REQUEST['answer_id']),
+                    array('%s', '%s'),
+                    array('%d')
+                );
+                               
+        return array(status => 1, result => $result);
+    }
+    
+    /**
+    * Check whether the student answer selected is correct or not against the correct answer
+    * @return evaluation info as JSON
+    * @author Valentin Marinov <dev.valentin2013@gmail.com>
+    */    
+    function evaluate_answer() {
+        global $wpdb, $FB_TABLE;
+        
+        $id = $_REQUEST['id'];        
+        $num = $_REQUEST['num'];        
+        $student_answer = $_REQUEST['answer'];
+        $answer_id = $_REQUEST['answer_id'];    
+        
+        //evaluation module
+        $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE id=" . $id );
+        $q = $dumb[0];
+        
+        $choices = unserialize($q->choices);
+        
+        if ($q->type == "multiple") {
+            if (is_array($student_answer)) sort($student_answer);
+            if (is_array($choices['correct'])) sort($choices['correct']);            
+        }
+        
+        if ( $student_answer == $choices['correct'] ) {
+            $correct = 'Correct';                        
+        } else {
+            $correct = 'Incorrect';            
+        }
+        
+        $student_choices = array();
+        $correct_choices = array();        
+        if (count($student_answer) > 0) {
+            foreach ($student_answer as $ch) {
+                $student_choices[] = $this->findChoiceName($choices['choices'], $ch);
+            }
+        }
+        
+        foreach ($choices['correct'] as $ch) {
+            $correct_choices[] = $this->findChoiceName($choices['choices'], $ch);
+        }
+        
+        $result = array(
+                        'correct'           => $correct,                        
+                        'title'             => '<span class="fb_qestion_title">' . $num . '. ' . $q->title . '</span><span class="fb_' . lcfirst($correct) . '"><span class="points">(' . $q->points . ' points)</span> ' . $correct . '</span>',
+                        'student_choices'   => $student_choices,
+                        'correct_choices'   => $correct_choices,
+                        'explanation'       => $q->correct_explanation
+                );
+        // end of evaluation module
+        
+        if ($answer_id == 0) {
+            $created_at = $updated_at = date('Y-m-d H:i:s', time());
+            $wpdb->insert( $FB_TABLE['answers'],
+                    array(
+                            'quiz_id'               => $_REQUEST['quiz_id'],
+                            'student_id'            => $_REQUEST['student_id'],                            
+                            'answers'               => serialize($_REQUEST['answers']),                            
                             'created_at'            => $created_at
                         ),
                     array('%d', '%d', '%s', '%s')
-                );               
-        echo json_encode(array(status => 1, id => $wpdb->insert_id, redirect_url => $FB_URL['results'] . '/' . $wpdb->insert_id));
+                );
+            $answer_id = $wpdb->insert_id;
+        } else {
+            $updated_at = date('Y-m-d H:i:s', time());
+            $res = $wpdb->update( $FB_TABLE['answers'],
+                    array(
+                            'answers'               => serialize($_REQUEST['answers']),                            
+                            'updated_at'            => $updated_at
+                        ),
+                    array('id' => $answer_id),
+                    array('%s', '%s'),
+                    array('%d')
+                );
+        }
+        
+        echo json_encode(array(status => 1, result => $result, answer_id => $answer_id));
+        die();
+    }
+    
+    function get_quiz_result() {
+        global $wpdb, $FB_TABLE;
+        
+        $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['answers'] . " WHERE id=" . $_REQUEST['answer_id']);
+    
+        if (count($dumb) == 0)  {
+            echo json_encode(array(status => 0, result => 'error'));
+            die();
+        }
+        
+        $a_data = $dumb[0];
+        $a_answers = unserialize($a_data->answers);
+        $quiz_id = $a_data->quiz_id;
+        
+        $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['quizzes'] . " WHERE id=" . $quiz_id );
+        $q_data = $dumb[0];
+        
+        $correct_count = $incorrect_count = 0;
+        $total_count = count($a_answers);
+        $correct_points = $total_points = 0;
+        
+        foreach ($a_answers as $answer) {
+            
+            $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE id=" . $answer['qid'] );
+            $q = $dumb[0];
+            $choices = unserialize($q->choices);
+            
+            $student_answer = $answer['answers'][0];            
+            
+            if ($q->type == "multiple") {
+                if (is_array($student_answer)) sort($student_answer);
+                if (is_array($choices['correct'])) sort($choices['correct']);            
+            }
+            
+            if ( $student_answer == $choices['correct'] ) {                
+                $correct_count ++;
+                $correct_points += $q->points;
+            } else {                
+                $incorrect_count ++;
+            }
+            
+            $total_points += $q->points;                   
+        }
+        
+        $result_percentage = round((100 / $total_points) * $correct_points);
+        if ($result_percentage >= $q_data->passing_percentage) {
+            $result_status = 'Passed';
+        } else {
+            $result_status = 'Failed';
+        }
+        
+        $a_title = $q_data->title . ' Results ';
+        $a_status = '<span class="fb_status ' . lcfirst($result_status) . '"><i class="fb-icon"></i>' . $result_status . '</span> <span class="fb_points">' .  $correct_points . '/' . $total_points . ' points (' . $result_percentage . '%)</span>';
+        
+        $wpdb->update(
+            $FB_TABLE['answers'],
+            array('score' => $result_percentage, 'result' => $result_status, 'time_taken' => $_REQUEST['time_taken'] ),
+            array('id' => $_REQUEST['answer_id']),
+            array('%d', '%s'),
+            array('%d')
+        );
+        
+        echo json_encode(array(status => 1, result => $a_status));
         die();
     }
     

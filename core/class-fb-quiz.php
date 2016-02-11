@@ -16,6 +16,8 @@ class FB_Quiz {
         add_action( 'wp_ajax_fb_add_quiz', array( $this, 'add_quiz' ) );
         add_action( 'wp_ajax_fb_edit_quiz', array( $this, 'edit_quiz' ) );
         add_action( 'wp_ajax_fb_get_quiz', array( $this, 'get_quiz' ) );
+        add_action( 'wp_ajax_nopriv_fb_get_quiz', array( $this, 'get_quiz' ) );        
+        
         add_action( 'wp_ajax_fb_remove_relationship', array( $this, 'remove_relationship' ) );
         add_action( 'wp_ajax_fb_remove_connection', array( $this, 'remove_connection' ) );
         
@@ -81,12 +83,13 @@ class FB_Quiz {
                             'allow_skipping'        => $p['allow_skipping'],
                             'immediate_feedback'    => $p['immediate_feedback'],
                             'random_questions'      => $p['random_questions'],
-                            'random_choices'        => $p['random_choices'],                            
+                            'random_choices'        => $p['random_choices'],
                             'status'                => $p['status'],
+                            'show_timer'            => $p['show_timer'],
                             'created_at'            => $created_at,
                             'updated_at'            => $updated_at
                         ),
-                    array('%s', '%s', '%d', '%s', '%d', '%d', '%s', '%d', '%d', '%d', '%d', '%s', '%s', '%s')
+                    array('%s', '%s', '%d', '%s', '%d', '%d', '%s', '%d', '%d', '%d', '%d', '%s', '%d', '%s', '%s')
                 );
         
         $quiz_id = $wpdb->insert_id;
@@ -146,10 +149,11 @@ class FB_Quiz {
                             'random_questions'      => $p['random_questions'],
                             'random_choices'        => $p['random_choices'],                            
                             'status'                => $p['status'],                            
+                            'show_timer'            => $p['show_timer'],
                             'updated_at'            => $updated_at
                         ),
                     array('id' => $id),
-                    array('%s', '%s', '%d', '%s', '%d', '%d', '%s', '%d', '%d', '%d', '%d', '%s', '%s'),
+                    array('%s', '%s', '%d', '%s', '%d', '%d', '%s', '%d', '%d', '%d', '%d', '%s', '%d', '%s'),
                     array('%d')
                 );        
         
@@ -204,7 +208,7 @@ class FB_Quiz {
         $q_questions = unserialize($result->questions);                                                                                                    
         if ($q_random_questions == 1) shuffle($q_questions);
         
-        $questions = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE id IN (" . implode(", ", $q_questions) . ") ORDER BY FIELD(id, " . implode(", ", $q_questions) . ")" );        
+        $questions = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['questions'] . " WHERE id IN (" . implode(", ", $q_questions) . ") ORDER BY FIELD(id, " . implode(", ", $q_questions) . ")" );                
         
         $i = 0;
         for ($i = 0; $i < count($questions); $i ++) {        

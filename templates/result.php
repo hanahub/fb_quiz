@@ -42,7 +42,7 @@
             $correct_count ++;
             $correct_points += $q->points;
         } else {
-            $correct = 'Wrong';
+            $correct = 'Incorrect';
             $incorrect_count ++;
         }
         
@@ -61,7 +61,7 @@
         
         array_push($output, array(
                         'correct'           => $correct,
-                        'title'             => $i . '. ' . $q->title . ' (' . $q->points . ' points)',
+                        'title'             => '<span class="fb_qestion_title">' . $i . '. ' . $q->title . '</span> <span class="fb_' . lcfirst($correct) . '"><span class="points">(' . $q->points . ' points)</span> ' . $correct . '</span>',
                         'student_choices'   => $student_choices,
                         'correct_choices'   => $correct_choices,
                         'explanation'       => $q->correct_explanation
@@ -77,7 +77,8 @@
         $result_status = 'Failed';
     }
     
-    $a_title = $q_data->title . ' Results &nbsp;&nbsp;&nbsp;&nbsp;' . $correct_points . '/' . $total_points . ' points (' . $result_percentage . '%) ' . $result_status;
+    $a_title = $q_data->title . ' Results ';
+    $a_status = '<span class="fb_status ' . lcfirst($result_status) . '"><i class="fb-icon"></i>' . $result_status . '</span> <span class="fb_points">' .  $correct_points . '/' . $total_points . ' points (' . $result_percentage . '%)</span>';
     
     $dumb = $wpdb->get_results("SELECT * FROM " . $FB_TABLE['answers'] . " WHERE id=" . $result_id );
     $wpdb->update(
@@ -92,17 +93,16 @@
 
 <div class="fb_wrap">
     <h3 class="fb_title"><?php echo $a_title; ?></h3>    
-    
+    <div class="fb_result"><?php echo $a_status; ?></div>
     <?php
         foreach ($output as $o) {
     ?>            
-            <div class="fb_row">
-                <div class="fb_result_status"><?php echo $o['correct']; ?></div>
+            <div class="fb_row">                
                 <div class="fb_result_content">
                     <div class="fb_question_title"><?php echo $o['title']; ?></div>
                     <div class="fb_answers">
                         <div class="fb_student_answers">
-                            <label>- Student Answers</label>
+                            <label>Your Answer</label>
                             <?php if (count($o['student_choices']) > 0) :?>
                                 <ul><li><?php echo implode('</li><li>', $o['student_choices']); ?></li></ul>
                             <?php else : ?>
@@ -111,7 +111,7 @@
                         </div>
                         <?php if ($o['correct'] != 'Correct') :?>
                         <div class="fb_correct_answers">
-                            <label>- Correct Answers</label>
+                            <label>Correct Answer</label>
                             <ul><li><?php echo implode('</li><li>', $o['correct_choices']); ?></li></ul>
                         </div>
                         <?php endif; ?>
@@ -133,7 +133,7 @@
     
     <div class="fb_quiz_footer">
         <input type="button" id="fb_take_quiz_again" value="Take Quiz Again" onclick="javascript: location.href = '<?php echo $FB_URL['quizzes'] . $quiz_id; ?>';"/>
-        <input type="button" id="fb_back" value="Back"/>
+        <input type="button" id="fb_view_all" value="View All Quiz Results" onclick="javascript: location.href = '<?php echo $FB_URL['my_quizzes']; ?>';"/>
         <input type="hidden" id="fb_quiz_id" value="<?php echo $quiz_id; ?>"/>        
     </div>
 </div>

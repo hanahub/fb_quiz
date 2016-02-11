@@ -1,7 +1,7 @@
 ul.fb_question_content {
     list-style-type: none;
 }
-ul.fb_question_content li {
+ul.fb_question_content li, .fb_answers {
     margin-left: 20px;
 }
 ul.fb_question_content li > label {    
@@ -10,13 +10,79 @@ ul.fb_question_content li > label {
     overflow: hidden;
 }
 .fb_choice_wrapper {
-    float: left;
-    width: 22px;
     padding-top: 2px;
     position: relative;
-} 
-.fb_choice_wrapper > input {
-    margin-top: 2px;
+}
+.checkbox input[type="checkbox"], .radio input[type="radio"] {
+    opacity: 0;
+}
+.radio label:before {    
+    width: 28px;
+    height: 28px;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    content: '';
+    display: inline-block;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+    border-radius: 50px;
+    border: 1px solid #BDD0E3;
+    background: #fff;
+}
+.checkbox label:before {
+    width: 28px;
+    height: 28px;
+    position: absolute;
+    top: 0px;
+    left: 0;
+    content: '';
+    display: inline-block;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    border: 1px solid #BDD0E3;
+    background: #fff;
+}
+.radio input[type="radio"]:checked + label::after {    
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    display: inline-block;
+    font-size: 11px;
+    width: 20px;
+    height: 20px;
+    background-color: #5b9ac6;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+    border-radius: 50px;
+}
+.checkbox input[type="checkbox"]:checked + label:after {
+    font-family: "fontello";
+    content: '\E809';
+    position: absolute;
+    top: 0px;
+    left: 3px;
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    font-size: 22px;
+    line-height: 28px;
+}
+.radio input[type="radio"]:checked + label:before,
+.checkbox input[type="checkbox"]:checked + label:before {
+    border-color: #5b9ac6;
+}
+.radio input[type="radio"]:checked + label,
+.checkbox input[type="checkbox"]:checked + label {
+    color: #5b9ac6;    
+}
+.radio input[type="radio"] + label, .checkbox input[type="checkbox"] + label {    
+    padding-left: 38px; 
+    margin-left: -15px;   
+    cursor: pointer;
+    position: relative;
 }
 .fb_wrap a {
     text-decoration: none;
@@ -30,6 +96,7 @@ ul.fb_question_content li > label {
 }
 .fb_choice_wrapper .fb-icon {
     margin-left: 0px;
+    font-size: 24px;
 }
 .single-quiz .entry-title {
     display: none;
@@ -72,12 +139,9 @@ ul.fb_question_content li > label {
     width: auto;
     overflow: hidden;
 }
-.fb_explanation {
-    clear: both;
-}
 .fb_explanation fieldset {
     padding: 10px;
-    border: 1px solid #ccc !important;
+    border: 1px solid #E8E2E2 !important;
     background: #fff;
 }
 .fb_explanation legend {
@@ -87,8 +151,22 @@ ul.fb_question_content li > label {
     margin-bottom: 0px;
 }
 .fb_answers ul {
-    margin-bottom: 10px;
-    margin-left: 28px;
+    list-style: none;    
+    margin: 0px;
+}
+.fb_answers ul > li, .fb_question_wrap ul > li {
+    margin-bottom: 8px;
+    padding: 5px 10px;
+    border-radius: 1px;
+}
+.fb_student_answers ul > li,
+.fb_question_wrap ul > li {
+    background-color: #DEE8F2;
+    border: 1px solid #C5CED7;    
+}
+.fb_correct_answers ul > li {
+    background-color: #ACECBA;
+    border: 1px solid #9BC8A7;        
 }
 .single-result .fb_wrap > .fb_row {
     margin-bottom: 20px;
@@ -97,15 +175,10 @@ ul.fb_question_content li > label {
     padding-top: 30px;
 }
 .fb_student_answers {
-    width: 48%;
-    display: inline-block;
-    padding-right: 2%;
-    float: left;
+    margin-bottom: 10px;
 }
 .fb_correct_answers {
-    width: 48%;
-    display: inline-block;
-    padding-right: 2%;
+    margin-bottom: 10px;
 }
 .fb_wrap.multiple .fb_quiz_left {
     min-width: 80px;
@@ -168,4 +241,86 @@ table th {
 }
 .fb_none_selected {
     padding-left: 8px;
+}
+.single.fb_quiz .fb_row .fb_answer_button_wrap {
+    margin-bottom: 20px;    
+    display: none;
+}
+.single.fb_quiz .fb_row.sorting .fb_answer_button_wrap {
+    display: block;
+}
+.fb_quiz > .fb_row {
+    margin-bottom: 30px;
+}
+.fb_answer_button  {
+    float: right;
+}
+.fade.ng-hide {
+    opacity:0;
+}
+.fade.ng-hide-remove {
+    transition: all linear 200ms;
+}
+.fade.ng-hide-add {
+    transition: all linear 0ms;
+}
+.fade.ng-enter {
+    transition: all linear 200ms;
+}
+.fade.ng-leave {
+    transition: all linear 0ms;
+}
+.fade.ng-enter,
+.fade.ng-leave.ng-leave-active {
+    opacity:0;
+}
+.fade.ng-leave,
+.fade.ng-enter.ng-enter-active {
+    opacity:1;
+}
+.fb_answered {
+    background: #2B6B0A;
+    color: #fff;
+}
+.fb_result {
+    margin-bottom: 20px;
+    text-align: center;
+}
+.fb_status {
+    
+}
+.fb_status.passed, .fb_correct {
+    color: #37a000;
+}
+.fb_status.failed, .fb_incorrect {
+    color: #FF001A;
+}
+.fb_incorrect > .points {
+    text-decoration: line-through;
+}
+.fb_question_title {
+    margin-bottom: 10px;
+}
+.fb_explanation {
+    margin-bottom: 10px;
+    margin-left: 20px;
+    clear: both;
+}
+.fb_answers label {
+    color: #999;
+    margin-bottom: 5px;
+    display: block;
+}
+.fb_timer {
+    text-align: right;
+}
+.fb_points, .fb_correct, .fb_incorrect {
+    font-size: smaller;    
+    padding-left: 5px;
+}
+.fb_points {
+    color: #999;
+}
+.fb_quiz_buttons {
+    display: none;
 }

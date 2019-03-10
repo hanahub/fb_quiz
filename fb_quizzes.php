@@ -3,7 +3,7 @@
 /*
    Plugin Name: FB Quizzes
    Description: FB Quizzes
-   Author: Valentin Marinov
+   Author: https://socialroot.co/
 */
 
 define( 'FBQUIZ_PATH', plugin_dir_path( __FILE__ ) );
